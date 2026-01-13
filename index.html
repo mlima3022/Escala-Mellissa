@@ -180,26 +180,27 @@
             font-size: 0.95rem;
         }
         
-        /* Calendar */
+        /* Calendar - CORRIGIDO */
         .weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            margin-bottom: 10px;
+            gap: 3px;
+            margin-bottom: 8px;
             text-align: center;
         }
         
         .weekday {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: var(--gray);
-            padding: 8px 0;
+            padding: 6px 0;
         }
         
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+            gap: 3px;
+            width: 100%;
         }
         
         .day {
@@ -209,20 +210,22 @@
             align-items: center;
             justify-content: center;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             transition: var(--transition);
             position: relative;
-            padding: 5px;
+            padding: 3px;
             border: 2px solid transparent;
+            min-height: 45px;
         }
         
         .day-number {
             font-weight: 600;
             margin-bottom: 2px;
+            font-size: 0.9rem;
         }
         
         .day-code {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
         }
         
@@ -239,21 +242,19 @@
         
         .day.empty {
             visibility: hidden;
+            border: none;
+            background: transparent;
         }
         
         .day.today {
             position: relative;
+            border-color: var(--warning);
+            background-color: rgba(255, 152, 0, 0.1);
         }
         
-        .day.today::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 6px;
-            height: 6px;
-            background-color: var(--warning);
-            border-radius: 50%;
+        .day.today .day-number {
+            font-weight: 800;
+            color: var(--warning);
         }
         
         .day.selected {
@@ -350,6 +351,74 @@
         .work-day-description {
             font-size: 0.95rem;
             color: var(--dark);
+        }
+        
+        /* Next Work Days - CORRIGIDO */
+        .next-work-days-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .next-day-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background-color: white;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .next-day-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .next-day-date {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 50px;
+        }
+        
+        .next-day-number {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .next-day-weekday {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+        
+        .next-day-details {
+            flex: 1;
+        }
+        
+        .next-day-code {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .next-day-description {
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+        
+        .next-day-distance {
+            font-size: 0.8rem;
+            color: var(--gray);
+            font-style: italic;
         }
         
         /* Codes Grid */
@@ -522,6 +591,26 @@
             .codes-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
+            
+            .day {
+                min-height: 55px;
+            }
+        }
+        
+        @media (max-width: 350px) {
+            .day {
+                min-height: 40px;
+                font-size: 0.75rem;
+                padding: 2px;
+            }
+            
+            .day-number {
+                font-size: 0.8rem;
+            }
+            
+            .day-code {
+                font-size: 0.6rem;
+            }
         }
         
         /* Animações */
@@ -557,6 +646,13 @@
         
         .mt-20 {
             margin-top: 20px;
+        }
+        
+        .no-work-days {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-style: italic;
         }
     </style>
 </head>
@@ -612,16 +708,16 @@
             <h2 class="mb-10">Resumo do Mês</h2>
             <div class="summary-stats">
                 <div class="stat">
-                    <div class="stat-value">12</div>
+                    <div class="stat-value" id="total-work-days">12</div>
                     <div class="stat-label">Dias de Trabalho</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value">19</div>
+                    <div class="stat-value" id="total-off-days">19</div>
                     <div class="stat-label">Dias de Folga</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value">7</div>
-                    <div class="stat-label">Plantões CTI</div>
+                    <div class="stat-value" id="next-work-in">0</div>
+                    <div class="stat-label" id="next-work-label">Próximo trabalho</div>
                 </div>
             </div>
         </div>
@@ -636,13 +732,13 @@
                 </h3>
                 
                 <div class="weekdays">
-                    <div class="weekday">D</div>
-                    <div class="weekday">S</div>
-                    <div class="weekday">T</div>
-                    <div class="weekday">Q</div>
-                    <div class="weekday">Q</div>
-                    <div class="weekday">S</div>
-                    <div class="weekday">S</div>
+                    <div class="weekday">Dom</div>
+                    <div class="weekday">Seg</div>
+                    <div class="weekday">Ter</div>
+                    <div class="weekday">Qua</div>
+                    <div class="weekday">Qui</div>
+                    <div class="weekday">Sex</div>
+                    <div class="weekday">Sáb</div>
                 </div>
                 
                 <div class="calendar-grid" id="calendar">
@@ -658,16 +754,20 @@
                         <div class="legend-color legend-off"></div>
                         <span>Folga</span>
                     </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="border-color: var(--warning); background-color: rgba(255, 152, 0, 0.1);"></div>
+                        <span>Hoje</span>
+                    </div>
                 </div>
             </div>
             
             <div class="card">
                 <h3 class="card-title">
-                    <i class="fas fa-info-circle"></i>
+                    <i class="fas fa-clock"></i>
                     Próximos Dias de Trabalho
                 </h3>
-                <div id="next-work-days">
-                    <!-- Próximos dias serão gerados por JavaScript -->
+                <div class="next-work-days-container" id="next-work-days">
+                    <!-- Próximos dias serão gerados dinamicamente -->
                 </div>
             </div>
         </div>
@@ -782,7 +882,7 @@
                     </div>
                     <div class="code-item">
                         <div class="code-badge">T</div>
-                        <div class="code-desc">Tarde</div>
+                        <div class="card-desc">Tarde</div>
                     </div>
                     <div class="code-item">
                         <div class="code-badge">N</div>
@@ -823,7 +923,7 @@
     </div>
 
     <script>
-        // Dados da escala
+        // Dados da escala CORRIGIDOS
         const workDays = [
             { day: 4, code: "PCti", description: "Plantão CTI" },
             { day: 7, code: "PUco", description: "Plantão UCO" },
@@ -839,14 +939,15 @@
             { day: 30, code: "PCti", description: "Plantão CTI" }
         ];
         
+        // Escala completa de janeiro
         const fullSchedule = [
             "F", "F", "F", "PCti", "F", "F", "PUco", "F", "MCti", "F",
             "PCti", "F", "F", "MCti", "F", "PCti", "F", "PCti", "F", "P",
             "F", "F", "PCti", "F", "MCti", "F", "F", "MCti", "F", "PCti", "F"
         ];
         
-        // Configurações do calendário
-        const firstDayOfMonth = 4; // Janeiro 2026 começa na quinta (0=domingo, 4=quinta)
+        // Configurações do calendário - JANEIRO 2026 começa na QUINTA-FEIRA
+        const firstDayOfMonth = 4; // 0=domingo, 1=segunda, 2=terça, 3=quarta, 4=quinta
         const daysInMonth = 31;
         const monthNames = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", 
                            "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
@@ -858,12 +959,57 @@
         const tabs = document.querySelectorAll('.tab');
         const navItems = document.querySelectorAll('.nav-item');
         const tabContents = document.querySelectorAll('.tab-content');
+        const totalWorkDaysEl = document.getElementById('total-work-days');
+        const totalOffDaysEl = document.getElementById('total-off-days');
+        const nextWorkInEl = document.getElementById('next-work-in');
+        const nextWorkLabelEl = document.getElementById('next-work-label');
         
-        // Inicializar calendário
+        // Obter data atual
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth(); // 0 = janeiro
+        const currentDay = currentDate.getDate();
+        
+        // Verificar se estamos em janeiro de 2026 para fins de demonstração
+        // Para teste, vamos considerar que estamos em 5 de janeiro de 2026
+        const demoDate = new Date(2026, 0, 5); // 5 de janeiro de 2026
+        const today = demoDate; // Para demonstração, usar data de teste
+        // const today = currentDate; // Para usar data real
+        
+        // Calcular próximo dia de trabalho
+        function getNextWorkDays() {
+            const todayDay = today.getDate();
+            const todayMonth = today.getMonth();
+            const todayYear = today.getFullYear();
+            
+            // Se não for janeiro de 2026, mostrar mensagem
+            if (todayYear !== 2026 || todayMonth !== 0) {
+                return { nextDays: [], daysUntilNext: null };
+            }
+            
+            // Filtrar dias de trabalho futuros
+            const futureWorkDays = workDays.filter(workDay => workDay.day > todayDay);
+            
+            // Ordenar por dia
+            futureWorkDays.sort((a, b) => a.day - b.day);
+            
+            // Pegar próximos 3 dias de trabalho
+            const nextDays = futureWorkDays.slice(0, 3);
+            
+            // Calcular dias até o próximo trabalho
+            let daysUntilNext = null;
+            if (nextDays.length > 0) {
+                daysUntilNext = nextDays[0].day - todayDay;
+            }
+            
+            return { nextDays, daysUntilNext };
+        }
+        
+        // Inicializar calendário CORRIGIDO
         function initCalendar() {
             calendarEl.innerHTML = '';
             
-            // Dias vazios no início
+            // Dias vazios no início - CORRIGIDO: Janeiro 2026 começa na quinta (4º dia)
             for (let i = 0; i < firstDayOfMonth; i++) {
                 const emptyDay = document.createElement('div');
                 emptyDay.className = 'day empty';
@@ -871,18 +1017,18 @@
             }
             
             // Dias do mês
-            const today = new Date();
-            const currentDay = today.getDate();
-            const currentMonth = today.getMonth();
-            const currentYear = today.getFullYear();
+            const todayDay = today.getDate();
+            const todayMonth = today.getMonth();
+            const todayYear = today.getFullYear();
+            const isJanuary2026 = (todayYear === 2026 && todayMonth === 0);
             
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayEl = document.createElement('div');
                 const code = fullSchedule[day - 1];
                 const isWorkDay = workDays.some(d => d.day === day);
                 
-                // Verificar se é hoje (apenas para demonstração)
-                const isToday = (currentYear === 2026 && currentMonth === 0 && day === currentDay);
+                // Verificar se é hoje (apenas se for janeiro de 2026)
+                const isToday = isJanuary2026 && (day === todayDay);
                 
                 dayEl.className = `day ${isWorkDay ? 'work' : 'off'} ${isToday ? 'today' : ''}`;
                 dayEl.dataset.day = day;
@@ -908,18 +1054,31 @@
                         if (workDay) {
                             showWorkDayDetails(workDay);
                         }
+                    } else {
+                        showDayDetails(day, code);
                     }
                 });
                 
                 calendarEl.appendChild(dayEl);
             }
+            
+            // Atualizar estatísticas
+            updateStatistics();
         }
         
         // Inicializar lista de dias de trabalho
         function initWorkDaysList() {
             workDaysListEl.innerHTML = '';
             
-            workDays.forEach(workDay => {
+            // Ordenar dias de trabalho
+            const sortedWorkDays = [...workDays].sort((a, b) => a.day - b.day);
+            
+            if (sortedWorkDays.length === 0) {
+                workDaysListEl.innerHTML = '<div class="no-work-days">Nenhum dia de trabalho neste mês</div>';
+                return;
+            }
+            
+            sortedWorkDays.forEach(workDay => {
                 const date = new Date(2026, 0, workDay.day);
                 const dayOfWeek = date.toLocaleDateString('pt-BR', { weekday: 'long' });
                 const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
@@ -936,6 +1095,7 @@
                     <div class="work-day-details">
                         <div class="work-day-code">${workDay.code}</div>
                         <div class="work-day-description">${workDay.description}</div>
+                        <div style="font-size: 0.8rem; color: #666;">${workDay.day} de Janeiro de 2026</div>
                     </div>
                 `;
                 
@@ -948,7 +1108,10 @@
                     const dayEl = document.querySelector(`.day[data-day="${workDay.day}"]`);
                     if (dayEl) {
                         dayEl.classList.add('selected');
-                        dayEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                        // Rolagem suave para o elemento
+                        setTimeout(() => {
+                            dayEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                        }, 100);
                     }
                     
                     // Mudar para a aba do calendário
@@ -959,18 +1122,57 @@
             });
         }
         
-        // Inicializar próximos dias de trabalho
+        // Inicializar próximos dias de trabalho CORRIGIDO
         function initNextWorkDays() {
             nextWorkDaysEl.innerHTML = '';
             
-            // Ordenar dias de trabalho
-            const sortedWorkDays = [...workDays].sort((a, b) => a.day - b.day);
+            const { nextDays, daysUntilNext } = getNextWorkDays();
             
-            // Pegar os próximos 3 dias de trabalho
-            const nextDays = sortedWorkDays.slice(0, 3);
+            // Atualizar contador no resumo
+            if (daysUntilNext !== null) {
+                nextWorkInEl.textContent = daysUntilNext;
+                nextWorkLabelEl.textContent = daysUntilNext === 1 ? "Próximo trabalho (amanhã)" : "Próximo trabalho";
+            } else {
+                nextWorkInEl.textContent = "-";
+                nextWorkLabelEl.textContent = "Próximo trabalho";
+            }
             
             if (nextDays.length === 0) {
-                nextWorkDaysEl.innerHTML = '<p class="text-center">Não há dias de trabalho programados.</p>';
+                const todayDay = today.getDate();
+                const todayMonth = today.getMonth();
+                const todayYear = today.getFullYear();
+                
+                if (todayYear !== 2026 || todayMonth !== 0) {
+                    nextWorkDaysEl.innerHTML = '<div class="no-work-days">Esta escala é para Janeiro 2026</div>';
+                } else {
+                    // Verificar se hoje é dia de trabalho
+                    const isTodayWorkDay = workDays.some(d => d.day === todayDay);
+                    
+                    if (isTodayWorkDay) {
+                        const workDay = workDays.find(d => d.day === todayDay);
+                        const dayOfWeek = today.toLocaleDateString('pt-BR', { weekday: 'long' });
+                        const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
+                        
+                        nextWorkDaysEl.innerHTML = `
+                            <div class="next-day-item" style="border-left-color: #4caf50;">
+                                <div class="next-day-info">
+                                    <div class="next-day-date">
+                                        <div class="next-day-number" style="color: #4caf50;">${todayDay}</div>
+                                        <div class="next-day-weekday">${capitalizedDay.substring(0, 3)}</div>
+                                    </div>
+                                    <div class="next-day-details">
+                                        <div class="next-day-code" style="background-color: #4caf50;">${workDay.code}</div>
+                                        <div class="next-day-description">${workDay.description}</div>
+                                        <div class="next-day-distance">HOJE - Trabalhando agora</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="no-work-days" style="margin-top: 15px;">Não há mais dias de trabalho este mês</div>
+                        `;
+                    } else {
+                        nextWorkDaysEl.innerHTML = '<div class="no-work-days">Não há mais dias de trabalho este mês</div>';
+                    }
+                }
                 return;
             }
             
@@ -979,18 +1181,32 @@
                 const dayOfWeek = date.toLocaleDateString('pt-BR', { weekday: 'long' });
                 const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
                 
+                // Calcular dias até este trabalho
+                const daysUntil = workDay.day - today.getDate();
+                let distanceText = "";
+                
+                if (daysUntil === 1) {
+                    distanceText = "Amanhã";
+                } else if (daysUntil === 0) {
+                    distanceText = "Hoje";
+                } else {
+                    distanceText = `Em ${daysUntil} dias`;
+                }
+                
                 const dayItem = document.createElement('div');
-                dayItem.className = 'work-day-item';
+                dayItem.className = 'next-day-item';
                 
                 dayItem.innerHTML = `
-                    <div class="work-day-date">
-                        <div class="work-day-number">${workDay.day}</div>
-                        <div class="work-day-weekday">${capitalizedDay.substring(0, 3)}</div>
-                    </div>
-                    <div class="work-day-details">
-                        <div class="work-day-code">${workDay.code}</div>
-                        <div class="work-day-description">${workDay.description}</div>
-                        <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">Janeiro 2026</div>
+                    <div class="next-day-info">
+                        <div class="next-day-date">
+                            <div class="next-day-number">${workDay.day}</div>
+                            <div class="next-day-weekday">${capitalizedDay.substring(0, 3)}</div>
+                        </div>
+                        <div class="next-day-details">
+                            <div class="next-day-code">${workDay.code}</div>
+                            <div class="next-day-description">${workDay.description}</div>
+                            <div class="next-day-distance">${distanceText} - ${workDay.day} de Jan</div>
+                        </div>
                     </div>
                 `;
                 
@@ -998,10 +1214,30 @@
             });
         }
         
-        // Mostrar detalhes de um dia de trabalho
+        // Atualizar estatísticas
+        function updateStatistics() {
+            const workDaysCount = workDays.length;
+            const offDaysCount = daysInMonth - workDaysCount;
+            
+            totalWorkDaysEl.textContent = workDaysCount;
+            totalOffDaysEl.textContent = offDaysCount;
+        }
+        
+        // Mostrar detalhes de um dia
         function showWorkDayDetails(workDay) {
-            // Criar modal ou tooltip (simplificado para exemplo)
-            alert(`Dia ${workDay.day} de Janeiro\nCódigo: ${workDay.code}\nDescrição: ${workDay.description}`);
+            // Criar modal simples
+            const dayOfWeek = new Date(2026, 0, workDay.day).toLocaleDateString('pt-BR', { weekday: 'long' });
+            const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
+            
+            alert(`📅 ${capitalizedDay}, ${workDay.day} de Janeiro de 2026\n\n🏥 ${workDay.description} (${workDay.code})\n⏰ Horário: 07:00 às 19:00\n📍 Setor: CTI / UCO`);
+        }
+        
+        function showDayDetails(day, code) {
+            const dayOfWeek = new Date(2026, 0, day).toLocaleDateString('pt-BR', { weekday: 'long' });
+            const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
+            const description = code === "F" ? "Folga" : "Desconhecido";
+            
+            alert(`📅 ${capitalizedDay}, ${day} de Janeiro de 2026\n\n${description} (${code})`);
         }
         
         // Alternar entre abas
@@ -1028,10 +1264,10 @@
             tabContents.forEach(content => {
                 if (content.id === `${tabName}-tab`) {
                     content.classList.add('active', 'fade-in');
-                    content.classList.remove('hidden');
+                    content.style.display = 'block';
                 } else {
                     content.classList.remove('active', 'fade-in');
-                    content.classList.add('hidden');
+                    content.style.display = 'none';
                 }
             });
             
@@ -1084,6 +1320,16 @@
             
             // Configurar a primeira aba como ativa
             switchTab('calendar');
+            
+            // Mostrar mensagem se não for janeiro de 2026
+            const todayYear = today.getFullYear();
+            const todayMonth = today.getMonth();
+            
+            if (todayYear !== 2026 || todayMonth !== 0) {
+                setTimeout(() => {
+                    alert(`Nota: Esta escala é para Janeiro de 2026.\nData atual: ${today.toLocaleDateString('pt-BR')}\nOs próximos dias de trabalho são calculados como se hoje fosse 5 de Janeiro de 2026.`);
+                }, 1000);
+            }
         }
         
         // Iniciar quando o DOM estiver carregado
@@ -1121,6 +1367,15 @@
                 switchTab(tabOrder[currentIndex - 1]);
             }
         }
+        
+        // Ajustar calendário ao redimensionar a janela
+        window.addEventListener('resize', () => {
+            // Forçar reflow para corrigir possíveis problemas de layout
+            calendarEl.style.display = 'none';
+            setTimeout(() => {
+                calendarEl.style.display = 'grid';
+            }, 10);
+        });
     </script>
 </body>
 </html>
