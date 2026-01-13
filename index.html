@@ -2,399 +2,828 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escala de Trabalho - Alexandra Melissa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Escala - Alexandra Melissa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Reset e variáveis */
+        :root {
+            --primary: #3a57e8;
+            --primary-dark: #2a46d0;
+            --secondary: #00acc1;
+            --light: #f8f9ff;
+            --dark: #182848;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
         }
         
         body {
-            background-color: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.5;
+            padding: 0;
+            overflow-x: hidden;
         }
         
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 100%;
+            padding: 15px;
         }
         
-        header {
-            text-align: center;
-            padding: 30px 0;
-            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+        /* Header */
+        .mobile-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .employee-info {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .employee-card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-        
-        .employee-card h3 {
-            color: #182848;
-            border-bottom: 2px solid #4b6cb7;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .info-row {
-            display: flex;
-            margin-bottom: 10px;
-        }
-        
-        .info-label {
-            font-weight: bold;
-            min-width: 150px;
-            color: #4b6cb7;
-        }
-        
-        .calendar-container {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-        
-        .month-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 20px 15px;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: var(--box-shadow);
             margin-bottom: 20px;
         }
         
-        .month-title {
-            font-size: 1.8rem;
-            color: #182848;
+        .mobile-header h1 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            font-weight: 700;
         }
         
+        .mobile-header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .month-nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .nav-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0.95);
+        }
+        
+        .current-month {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .print-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .print-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+        
+        .card:active {
+            transform: translateY(-2px);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title i {
+            color: var(--primary);
+        }
+        
+        /* Employee Info */
+        .employee-info {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            min-width: 110px;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+        
+        .info-value {
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+        
+        /* Calendar */
         .weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 5px;
             margin-bottom: 10px;
+            text-align: center;
         }
         
         .weekday {
-            text-align: center;
-            font-weight: bold;
-            padding: 10px;
-            background-color: #f0f4ff;
-            border-radius: 5px;
-            color: #4b6cb7;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray);
+            padding: 8px 0;
         }
         
-        .calendar {
+        .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 5px;
         }
         
         .day {
-            height: 70px;
+            aspect-ratio: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            border-radius: 5px;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            position: relative;
             padding: 5px;
-            transition: all 0.3s ease;
-        }
-        
-        .day.empty {
-            background-color: transparent;
-        }
-        
-        .day.work-day {
-            background-color: #e0f7fa;
-            border: 2px solid #00acc1;
-            color: #006064;
-            font-weight: bold;
-        }
-        
-        .day.off-day {
-            background-color: #f5f5f5;
-            color: #9e9e9e;
+            border: 2px solid transparent;
         }
         
         .day-number {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
+            font-weight: 600;
+            margin-bottom: 2px;
         }
         
-        .day-status {
-            font-size: 0.8rem;
-            text-align: center;
+        .day-code {
+            font-size: 0.7rem;
+            font-weight: 600;
         }
         
+        .day.work {
+            background-color: rgba(0, 172, 193, 0.1);
+            border-color: var(--secondary);
+            color: #006064;
+        }
+        
+        .day.off {
+            background-color: var(--light-gray);
+            color: var(--gray);
+        }
+        
+        .day.empty {
+            visibility: hidden;
+        }
+        
+        .day.today {
+            position: relative;
+        }
+        
+        .day.today::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 6px;
+            height: 6px;
+            background-color: var(--warning);
+            border-radius: 50%;
+        }
+        
+        .day.selected {
+            box-shadow: 0 0 0 3px rgba(58, 87, 232, 0.3);
+            transform: scale(1.05);
+            z-index: 10;
+        }
+        
+        /* Legend */
         .legend {
             display: flex;
-            justify-content: center;
-            gap: 20px;
             flex-wrap: wrap;
-            margin-top: 20px;
+            gap: 15px;
+            margin-top: 15px;
+            justify-content: center;
         }
         
         .legend-item {
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.85rem;
         }
         
-        .color-box {
-            width: 20px;
-            height: 20px;
+        .legend-color {
+            width: 16px;
+            height: 16px;
             border-radius: 3px;
         }
         
-        .work-color {
-            background-color: #e0f7fa;
-            border: 1px solid #00acc1;
+        .legend-work {
+            background-color: rgba(0, 172, 193, 0.1);
+            border: 2px solid var(--secondary);
         }
         
-        .off-color {
-            background-color: #f5f5f5;
-            border: 1px solid #9e9e9e;
+        .legend-off {
+            background-color: var(--light-gray);
+            border: 2px solid var(--gray);
         }
         
-        .work-schedule {
-            background-color: white;
+        /* Work Days List */
+        .work-days-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .work-day-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: rgba(0, 172, 193, 0.05);
             border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--secondary);
         }
         
-        .schedule-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
+        .work-day-date {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 70px;
+            padding-right: 15px;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
         }
         
-        .schedule-table th {
-            background-color: #4b6cb7;
+        .work-day-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .work-day-weekday {
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-transform: uppercase;
+        }
+        
+        .work-day-details {
+            padding-left: 15px;
+            flex: 1;
+        }
+        
+        .work-day-code {
+            display: inline-block;
+            background-color: var(--primary);
             color: white;
-            padding: 12px;
-            text-align: left;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
         
-        .schedule-table td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
+        .work-day-description {
+            font-size: 0.95rem;
+            color: var(--dark);
         }
         
-        .schedule-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        
-        .schedule-table tr:hover {
-            background-color: #f0f4ff;
-        }
-        
-        .code-explanation {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 30px;
-        }
-        
-        .codes {
+        /* Codes Grid */
+        .codes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
         }
         
         .code-item {
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 10px;
+            background-color: var(--light-gray);
+            border-radius: 8px;
         }
         
-        .code {
-            font-weight: bold;
-            color: #4b6cb7;
+        .code-badge {
             min-width: 50px;
-        }
-        
-        footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 5px;
+            border-radius: 6px;
             text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            color: #666;
-            font-size: 0.9rem;
+            font-weight: 700;
+            font-size: 0.85rem;
         }
         
-        @media (max-width: 768px) {
-            .weekdays, .calendar {
-                gap: 3px;
+        .code-desc {
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+        
+        /* Summary Card */
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .summary-stats {
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .stat {
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        /* Tab Navigation */
+        .tab-container {
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            background-color: white;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 0 15px;
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab {
+            flex: 0 0 auto;
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-top: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.75rem;
+            padding: 5px;
+            transition: var(--transition);
+            flex: 1;
+        }
+        
+        .nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .main-content {
+            padding-bottom: 70px; /* Espaço para a navegação inferior */
+        }
+        
+        /* Responsividade adicional */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 750px;
+                margin: 0 auto;
+                padding: 20px;
             }
             
-            .day {
-                height: 60px;
-                font-size: 0.9rem;
+            .mobile-header {
+                padding: 25px 20px;
             }
             
-            .day-number {
-                font-size: 1rem;
+            .mobile-header h1 {
+                font-size: 1.6rem;
             }
             
-            .codes {
-                grid-template-columns: 1fr;
+            .codes-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
+        }
+        
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease forwards;
+        }
+        
+        /* Utilitários */
+        .hidden {
+            display: none !important;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+        
+        .mb-15 {
+            margin-bottom: 15px;
+        }
+        
+        .mt-10 {
+            margin-top: 10px;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Escala de Trabalho - Janeiro 2026</h1>
-            <p>Fisioterapia - Alexandra Melissa Moura de Farias</p>
-        </header>
+    <!-- Header móvel -->
+    <div class="mobile-header">
+        <h1>Alexandra Melissa</h1>
+        <p>Escala de Trabalho - Janeiro 2026</p>
         
-        <div class="employee-card">
-            <h3>Informações do Funcionário</h3>
-            <div class="info-row">
-                <div class="info-label">Nome:</div>
-                <div>Alexandra Melissa Moura de Farias</div>
+        <div class="header-actions">
+            <div class="month-nav">
+                <button class="nav-btn" id="prev-month">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="current-month" id="current-month">JANEIRO 2026</div>
+                <button class="nav-btn" id="next-month">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
-            <div class="info-row">
-                <div class="info-label">Matrícula:</div>
-                <div>85285</div>
+            
+            <button class="print-btn" id="print-btn">
+                <i class="fas fa-print"></i>
+                <span>Salvar</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Navegação por abas -->
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-tab="calendar">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Calendário</span>
             </div>
-            <div class="info-row">
-                <div class="info-label">Função:</div>
-                <div>Fisioterapeuta</div>
+            <div class="tab" data-tab="work-days">
+                <i class="fas fa-list-check"></i>
+                <span>Dias de Trabalho</span>
             </div>
-            <div class="info-row">
-                <div class="info-label">Horário de Trabalho:</div>
-                <div>07:00 às 19:00</div>
+            <div class="tab" data-tab="info">
+                <i class="fas fa-user"></i>
+                <span>Informações</span>
+            </div>
+            <div class="tab" data-tab="legend">
+                <i class="fas fa-key"></i>
+                <span>Legenda</span>
             </div>
         </div>
-        
-        <div class="calendar-container">
-            <div class="month-header">
-                <h2 class="month-title">Janeiro 2026</h2>
-            </div>
-            
-            <div class="weekdays">
-                <div class="weekday">Dom</div>
-                <div class="weekday">Seg</div>
-                <div class="weekday">Ter</div>
-                <div class="weekday">Qua</div>
-                <div class="weekday">Qui</div>
-                <div class="weekday">Sex</div>
-                <div class="weekday">Sáb</div>
-            </div>
-            
-            <div class="calendar" id="calendar">
-                <!-- Os dias serão gerados por JavaScript -->
-            </div>
-            
-            <div class="legend">
-                <div class="legend-item">
-                    <div class="color-box work-color"></div>
-                    <span>Dia de Trabalho</span>
+    </div>
+    
+    <div class="container main-content">
+        <!-- Resumo -->
+        <div class="summary-card">
+            <h2 class="mb-10">Resumo do Mês</h2>
+            <div class="summary-stats">
+                <div class="stat">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Dias de Trabalho</div>
                 </div>
-                <div class="legend-item">
-                    <div class="color-box off-color"></div>
-                    <span>Folga</span>
+                <div class="stat">
+                    <div class="stat-value">19</div>
+                    <div class="stat-label">Dias de Folga</div>
                 </div>
-            </div>
-        </div>
-        
-        <div class="work-schedule">
-            <h3>Dias de Trabalho em Janeiro</h3>
-            <p>Alexandra Melissa trabalhará nos seguintes dias:</p>
-            
-            <table class="schedule-table">
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Dia da Semana</th>
-                        <th>Código</th>
-                        <th>Tipo de Trabalho</th>
-                    </tr>
-                </thead>
-                <tbody id="schedule-body">
-                    <!-- As linhas serão geradas por JavaScript -->
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="code-explanation">
-            <h3>Legenda dos Códigos</h3>
-            <p>Explicação das abreviações utilizadas na escala:</p>
-            <div class="codes">
-                <div class="code-item">
-                    <span class="code">F</span>
-                    <span>Folga</span>
-                </div>
-                <div class="code-item">
-                    <span class="code">P</span>
-                    <span>Plantão</span>
-                </div>
-                <div class="code-item">
-                    <span class="code">PCti</span>
-                    <span>Plantão CTI</span>
-                </div>
-                <div class="code-item">
-                    <span class="code">MCti</span>
-                    <span>Manhã CTI</span>
-                </div>
-                <div class="code-item">
-                    <span class="code">PUco</span>
-                    <span>Plantão UCO</span>
-                </div>
-                <div class="code-item">
-                    <span class="code">M</span>
-                    <span>Manhã</span>
-                </div>
-                <div class="code-item">
-                    <span class="code">T</span>
-                    <span>Tarde</span>
-                </div>
-                <div class="code-item">
-                    <span class="code">N</span>
-                    <span>Noite</span>
+                <div class="stat">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">Plantões CTI</div>
                 </div>
             </div>
         </div>
         
-        <footer>
-            <p>Escala de Janeiro 2026 - Departamento de Fisioterapia</p>
-            <p>Atualizado em: Janeiro de 2026</p>
-        </footer>
+        <!-- Conteúdo das abas -->
+        <!-- Aba Calendário -->
+        <div id="calendar-tab" class="tab-content active fade-in">
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-calendar-days"></i>
+                    Calendário de Janeiro 2026
+                </h3>
+                
+                <div class="weekdays">
+                    <div class="weekday">D</div>
+                    <div class="weekday">S</div>
+                    <div class="weekday">T</div>
+                    <div class="weekday">Q</div>
+                    <div class="weekday">Q</div>
+                    <div class="weekday">S</div>
+                    <div class="weekday">S</div>
+                </div>
+                
+                <div class="calendar-grid" id="calendar">
+                    <!-- Dias serão gerados por JavaScript -->
+                </div>
+                
+                <div class="legend mt-20">
+                    <div class="legend-item">
+                        <div class="legend-color legend-work"></div>
+                        <span>Dia de Trabalho</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-off"></div>
+                        <span>Folga</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-info-circle"></i>
+                    Próximos Dias de Trabalho
+                </h3>
+                <div id="next-work-days">
+                    <!-- Próximos dias serão gerados por JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Aba Dias de Trabalho -->
+        <div id="work-days-tab" class="tab-content">
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-briefcase"></i>
+                    Todos os Dias de Trabalho
+                </h3>
+                
+                <div class="work-days-list" id="work-days-list">
+                    <!-- Lista de dias de trabalho será gerada por JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Aba Informações -->
+        <div id="info-tab" class="tab-content">
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-id-card"></i>
+                    Informações da Funcionária
+                </h3>
+                
+                <div class="employee-info">
+                    <div class="info-item">
+                        <div class="info-label">Nome:</div>
+                        <div class="info-value">Alexandra Melissa Moura de Farias</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Matrícula:</div>
+                        <div class="info-value">85285</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Função:</div>
+                        <div class="info-value">Fisioterapeuta</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Horário:</div>
+                        <div class="info-value">07:00 às 19:00</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Setor:</div>
+                        <div class="info-value">CTI / UCO</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-pie"></i>
+                    Estatísticas do Mês
+                </h3>
+                
+                <div class="codes-grid">
+                    <div class="code-item">
+                        <div class="code-badge" style="background-color: #00acc1;">PCti</div>
+                        <div class="code-desc">7 dias</div>
+                    </div>
+                    <div class="code-item">
+                        <div class="code-badge" style="background-color: #3a57e8;">MCti</div>
+                        <div class="code-desc">4 dias</div>
+                    </div>
+                    <div class="code-item">
+                        <div class="code-badge" style="background-color: #ff9800;">PUco</div>
+                        <div class="code-desc">1 dia</div>
+                    </div>
+                    <div class="code-item">
+                        <div class="code-badge" style="background-color: #4caf50;">P</div>
+                        <div class="code-desc">1 dia</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Aba Legenda -->
+        <div id="legend-tab" class="tab-content">
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-key"></i>
+                    Legenda Completa
+                </h3>
+                
+                <p class="mb-15">Significado dos códigos utilizados na escala:</p>
+                
+                <div class="codes-grid">
+                    <div class="code-item">
+                        <div class="code-badge">F</div>
+                        <div class="code-desc">Folga</div>
+                    </div>
+                    <div class="code-item">
+                        <div class="code-badge">P</div>
+                        <div class="code-desc">Plantão Geral</div>
+                    </div>
+                    <div class="code-item">
+                        <div class="code-badge">PCti</div>
+                        <div class="code-desc">Plantão CTI</div>
+                    </div>
+                    <div class="code-item">
+                        <div class="code-badge">MCti</div>
+                        <div class="code-desc">Manhã CTI</div>
+                    </div>
+                    <div class="code-item">
+                        <div class="code-badge">PUco</div>
+                        <div class="code-desc">Plantão UCO</div>
+                    </div>
+                    <div class="code-item">
+                        <div class="code-badge">M</div>
+                        <div class="code-desc">Manhã</div>
+                    </div>
+                    <div class="code-item">
+                        <div class="code-badge">T</div>
+                        <div class="code-desc">Tarde</div>
+                    </div>
+                    <div class="code-item">
+                        <div class="code-badge">N</div>
+                        <div class="code-desc">Noite</div>
+                    </div>
+                    <div class="code-item">
+                        <div class="code-badge">***</div>
+                        <div class="code-desc">Férias</div>
+                    </div>
+                </div>
+                
+                <div class="mt-20">
+                    <p><strong>CTI:</strong> Centro de Terapia Intensiva</p>
+                    <p><strong>UCO:</strong> Unidade de Cuidados Orientados</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navegação inferior -->
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active" data-tab="calendar">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Calendário</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="work-days">
+            <i class="fas fa-list-check"></i>
+            <span>Trabalho</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="info">
+            <i class="fas fa-user"></i>
+            <span>Informações</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="legend">
+            <i class="fas fa-key"></i>
+            <span>Legenda</span>
+        </a>
     </div>
 
     <script>
-        // Dias de trabalho de Alexandra Melissa em janeiro de 2026
+        // Dados da escala
         const workDays = [
             { day: 4, code: "PCti", description: "Plantão CTI" },
             { day: 7, code: "PUco", description: "Plantão UCO" },
@@ -410,70 +839,288 @@
             { day: 30, code: "PCti", description: "Plantão CTI" }
         ];
         
-        // Mapeamento de códigos para descrições completas
-        const codeDescriptions = {
-            "F": "Folga",
-            "P": "Plantão",
-            "PCti": "Plantão CTI",
-            "PUco": "Plantão UCO",
-            "MCti": "Manhã CTI",
-            "M": "Manhã",
-            "T": "Tarde",
-            "N": "Noite"
-        };
-        
-        // Array com os dias da escala completa de Alexandra Melissa (1 a 31 de janeiro)
         const fullSchedule = [
             "F", "F", "F", "PCti", "F", "F", "PUco", "F", "MCti", "F",
             "PCti", "F", "F", "MCti", "F", "PCti", "F", "PCti", "F", "P",
             "F", "F", "PCti", "F", "MCti", "F", "F", "MCti", "F", "PCti", "F"
         ];
         
-        // Janeiro de 2026 começa na quinta-feira (índice 4, considerando 0=domingo)
-        const firstDayOfMonth = 4; // Quinta-feira
+        // Configurações do calendário
+        const firstDayOfMonth = 4; // Janeiro 2026 começa na quinta (0=domingo, 4=quinta)
         const daysInMonth = 31;
+        const monthNames = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", 
+                           "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
         
-        // Gerar o calendário
+        // Elementos DOM
         const calendarEl = document.getElementById('calendar');
-        const scheduleBody = document.getElementById('schedule-body');
+        const workDaysListEl = document.getElementById('work-days-list');
+        const nextWorkDaysEl = document.getElementById('next-work-days');
+        const tabs = document.querySelectorAll('.tab');
+        const navItems = document.querySelectorAll('.nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
         
-        // Adicionar dias vazios no início do mês
-        for (let i = 0; i < firstDayOfMonth; i++) {
-            const emptyDay = document.createElement('div');
-            emptyDay.className = 'day empty';
-            calendarEl.appendChild(emptyDay);
+        // Inicializar calendário
+        function initCalendar() {
+            calendarEl.innerHTML = '';
+            
+            // Dias vazios no início
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'day empty';
+                calendarEl.appendChild(emptyDay);
+            }
+            
+            // Dias do mês
+            const today = new Date();
+            const currentDay = today.getDate();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayEl = document.createElement('div');
+                const code = fullSchedule[day - 1];
+                const isWorkDay = workDays.some(d => d.day === day);
+                
+                // Verificar se é hoje (apenas para demonstração)
+                const isToday = (currentYear === 2026 && currentMonth === 0 && day === currentDay);
+                
+                dayEl.className = `day ${isWorkDay ? 'work' : 'off'} ${isToday ? 'today' : ''}`;
+                dayEl.dataset.day = day;
+                
+                dayEl.innerHTML = `
+                    <div class="day-number">${day}</div>
+                    <div class="day-code">${code}</div>
+                `;
+                
+                // Adicionar evento de toque
+                dayEl.addEventListener('click', () => {
+                    // Remover seleção de todos os dias
+                    document.querySelectorAll('.day.selected').forEach(d => {
+                        d.classList.remove('selected');
+                    });
+                    
+                    // Selecionar este dia
+                    dayEl.classList.add('selected');
+                    
+                    // Se for um dia de trabalho, mostrar detalhes
+                    if (isWorkDay) {
+                        const workDay = workDays.find(d => d.day === day);
+                        if (workDay) {
+                            showWorkDayDetails(workDay);
+                        }
+                    }
+                });
+                
+                calendarEl.appendChild(dayEl);
+            }
         }
         
-        // Adicionar os dias do mês
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dayEl = document.createElement('div');
-            const code = fullSchedule[day - 1];
-            const isWorkDay = workDays.some(d => d.day === day);
+        // Inicializar lista de dias de trabalho
+        function initWorkDaysList() {
+            workDaysListEl.innerHTML = '';
             
-            dayEl.className = isWorkDay ? 'day work-day' : 'day off-day';
-            dayEl.innerHTML = `
-                <div class="day-number">${day}</div>
-                <div class="day-status">${code}</div>
-            `;
-            
-            calendarEl.appendChild(dayEl);
+            workDays.forEach(workDay => {
+                const date = new Date(2026, 0, workDay.day);
+                const dayOfWeek = date.toLocaleDateString('pt-BR', { weekday: 'long' });
+                const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
+                
+                const workDayItem = document.createElement('div');
+                workDayItem.className = 'work-day-item';
+                workDayItem.dataset.day = workDay.day;
+                
+                workDayItem.innerHTML = `
+                    <div class="work-day-date">
+                        <div class="work-day-number">${workDay.day}</div>
+                        <div class="work-day-weekday">${capitalizedDay.substring(0, 3)}</div>
+                    </div>
+                    <div class="work-day-details">
+                        <div class="work-day-code">${workDay.code}</div>
+                        <div class="work-day-description">${workDay.description}</div>
+                    </div>
+                `;
+                
+                workDayItem.addEventListener('click', () => {
+                    // Destacar no calendário
+                    document.querySelectorAll('.day.selected').forEach(d => {
+                        d.classList.remove('selected');
+                    });
+                    
+                    const dayEl = document.querySelector(`.day[data-day="${workDay.day}"]`);
+                    if (dayEl) {
+                        dayEl.classList.add('selected');
+                        dayEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                    }
+                    
+                    // Mudar para a aba do calendário
+                    switchTab('calendar');
+                });
+                
+                workDaysListEl.appendChild(workDayItem);
+            });
         }
         
-        // Gerar a tabela de dias de trabalho
-        workDays.forEach(workDay => {
-            const date = new Date(2026, 0, workDay.day); // Janeiro é mês 0 em JavaScript
-            const dayOfWeek = date.toLocaleDateString('pt-BR', { weekday: 'long' });
+        // Inicializar próximos dias de trabalho
+        function initNextWorkDays() {
+            nextWorkDaysEl.innerHTML = '';
             
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${workDay.day} de Janeiro de 2026</td>
-                <td>${dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1)}</td>
-                <td><strong>${workDay.code}</strong></td>
-                <td>${workDay.description}</td>
-            `;
+            // Ordenar dias de trabalho
+            const sortedWorkDays = [...workDays].sort((a, b) => a.day - b.day);
             
-            scheduleBody.appendChild(row);
+            // Pegar os próximos 3 dias de trabalho
+            const nextDays = sortedWorkDays.slice(0, 3);
+            
+            if (nextDays.length === 0) {
+                nextWorkDaysEl.innerHTML = '<p class="text-center">Não há dias de trabalho programados.</p>';
+                return;
+            }
+            
+            nextDays.forEach(workDay => {
+                const date = new Date(2026, 0, workDay.day);
+                const dayOfWeek = date.toLocaleDateString('pt-BR', { weekday: 'long' });
+                const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
+                
+                const dayItem = document.createElement('div');
+                dayItem.className = 'work-day-item';
+                
+                dayItem.innerHTML = `
+                    <div class="work-day-date">
+                        <div class="work-day-number">${workDay.day}</div>
+                        <div class="work-day-weekday">${capitalizedDay.substring(0, 3)}</div>
+                    </div>
+                    <div class="work-day-details">
+                        <div class="work-day-code">${workDay.code}</div>
+                        <div class="work-day-description">${workDay.description}</div>
+                        <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">Janeiro 2026</div>
+                    </div>
+                `;
+                
+                nextWorkDaysEl.appendChild(dayItem);
+            });
+        }
+        
+        // Mostrar detalhes de um dia de trabalho
+        function showWorkDayDetails(workDay) {
+            // Criar modal ou tooltip (simplificado para exemplo)
+            alert(`Dia ${workDay.day} de Janeiro\nCódigo: ${workDay.code}\nDescrição: ${workDay.description}`);
+        }
+        
+        // Alternar entre abas
+        function switchTab(tabName) {
+            // Atualizar abas superiores
+            tabs.forEach(tab => {
+                if (tab.dataset.tab === tabName) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // Atualizar navegação inferior
+            navItems.forEach(item => {
+                if (item.dataset.tab === tabName) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Mostrar conteúdo da aba
+            tabContents.forEach(content => {
+                if (content.id === `${tabName}-tab`) {
+                    content.classList.add('active', 'fade-in');
+                    content.classList.remove('hidden');
+                } else {
+                    content.classList.remove('active', 'fade-in');
+                    content.classList.add('hidden');
+                }
+            });
+            
+            // Remover classe de animação após a animação
+            setTimeout(() => {
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('fade-in');
+                });
+            }, 400);
+        }
+        
+        // Configurar eventos das abas
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                switchTab(tabName);
+            });
         });
+        
+        // Configurar eventos da navegação inferior
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabName = item.dataset.tab;
+                switchTab(tabName);
+            });
+        });
+        
+        // Configurar botão de impressão/salvar
+        document.getElementById('print-btn').addEventListener('click', () => {
+            // Em um ambiente real, isso abriria a caixa de diálogo de impressão
+            // Para demonstração, apenas mostraremos uma mensagem
+            alert("Funcionalidade de salvar/impressão ativada. Em um ambiente real, isso abriria as opções de salvamento ou impressão.");
+        });
+        
+        // Configurar navegação de meses (apresentação)
+        document.getElementById('prev-month').addEventListener('click', () => {
+            alert("Janeiro é o primeiro mês da escala. Não há mês anterior disponível.");
+        });
+        
+        document.getElementById('next-month').addEventListener('click', () => {
+            alert("Esta escala mostra apenas janeiro de 2026. Para meses futuros, consulte a escala atualizada.");
+        });
+        
+        // Inicializar a aplicação
+        function initApp() {
+            initCalendar();
+            initWorkDaysList();
+            initNextWorkDays();
+            
+            // Configurar a primeira aba como ativa
+            switchTab('calendar');
+        }
+        
+        // Iniciar quando o DOM estiver carregado
+        document.addEventListener('DOMContentLoaded', initApp);
+        
+        // Suporte para gestos de deslizar (swipe) entre abas
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            // Determinar a aba atual
+            const currentTab = document.querySelector('.tab.active').dataset.tab;
+            const tabOrder = ['calendar', 'work-days', 'info', 'legend'];
+            const currentIndex = tabOrder.indexOf(currentTab);
+            
+            // Deslizar para a esquerda (próxima aba)
+            if (diff > swipeThreshold && currentIndex < tabOrder.length - 1) {
+                switchTab(tabOrder[currentIndex + 1]);
+            }
+            
+            // Deslizar para a direita (aba anterior)
+            if (diff < -swipeThreshold && currentIndex > 0) {
+                switchTab(tabOrder[currentIndex - 1]);
+            }
+        }
     </script>
 </body>
 </html>
