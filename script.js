@@ -1,236 +1,474 @@
-// Dados de todos os fisioterapeutas
+// Sistema inteligente de previsão de companheiros e passagem de plantão
+
+// Mapeamento de códigos para descrições e turnos
+const codeMap = {
+    "F": { description: "Folga", shift: null, category: "off", time: null },
+    "M": { description: "Manhã", shift: "morning", category: "work", time: "7:00-13:00" },
+    "T": { description: "Tarde", shift: "afternoon", category: "work", time: "13:00-19:00" },
+    "MT": { description: "Manhã e Tarde", shift: "full", category: "work", time: "7:00-15:00" },
+    "P": { description: "Plantão", shift: "full", category: "work", time: "7:00-19:00" },
+    "MCti": { description: "Manhã CTI", shift: "morning", category: "work", time: "7:00-13:00" },
+    "PCti": { description: "Plantão CTI", shift: "full", category: "work", time: "7:00-19:00" },
+    "PUco": { description: "Plantão UCO", shift: "full", category: "work", time: "7:00-19:00" },
+    "TUco": { description: "Tarde UCO", shift: "afternoon", category: "work", time: "13:00-19:00" },
+    "MUco": { description: "Manhã UCO", shift: "morning", category: "work", time: "7:00-13:00" },
+    "PUn": { description: "Plantão Noturno", shift: "night", category: "work", time: "19:00-7:00" },
+    "TUn": { description: "Tarde Noturno", shift: "afternoon", category: "work", time: "13:00-19:00" },
+    "***": { description: "Férias", shift: null, category: "vacation", time: null }
+};
+
+// Mapeamento de setores para códigos
+const sectorMap = {
+    "MCti": "CTI",
+    "PCti": "CTI",
+    "PUn": "CTI/Noturno",
+    "TUn": "CTI/Noturno",
+    "PUco": "UCO",
+    "TUco": "UCO",
+    "MUco": "UCO",
+    "MT": "CTI/UCO",
+    "M": "Geral",
+    "T": "Geral",
+    "P": "Geral"
+};
+
+// Dados de todos os fisioterapeutas do PDF
 const fisioterapeutas = [
     {
         id: 1,
-        nome: "Alexandra Mellissa Moura de Farias",
-        matricula: "85285",
-        funcao: "Fisioterapeuta",
-        horario: "07:00 às 19:00 / 19:00 às 07:00",
-        setor: "CTI / UCO",
+        nome: "Joicyara da Silva Souza",
+        matricula: "83297",
+        funcao: "Fisioterapeuta Supervisora",
+        horario: "2ª a 6ª - 7:00 às 13:00",
+        setor: "Supervisão",
         cor: "#3a57e8",
-        escala: [
-            { day: 4, code: "PCti", description: "Plantão CTI", shift: "full", partners: [2, 3], handoverTo: 5 },
-            { day: 7, code: "PUco", description: "Plantão UCO", shift: "full", partners: [4], handoverTo: null },
-            { day: 9, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [2, 6], handoverTo: 7 },
-            { day: 11, code: "PCti", description: "Plantão CTI", shift: "full", partners: [3, 5], handoverTo: null },
-            { day: 14, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [2, 8], handoverTo: 9 },
-            { day: 16, code: "PCti", description: "Plantão CTI", shift: "full", partners: [4, 6], handoverTo: 7 },
-            { day: 18, code: "PCti", description: "Plantão CTI", shift: "full", partners: [3, 5], handoverTo: null },
-            { day: 20, code: "P", description: "Plantão Geral", shift: "full", partners: [2, 4], handoverTo: 8 },
-            { day: 23, code: "PCti", description: "Plantão CTI", shift: "full", partners: [5, 6], handoverTo: null },
-            { day: 25, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [3, 7], handoverTo: 9 },
-            { day: 28, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [2, 8], handoverTo: 4 },
-            { day: 30, code: "PCti", description: "Plantão CTI", shift: "full", partners: [6, 7], handoverTo: null }
-        ]
+        escala: ["F", "M", "F", "F", "M", "M", "M", "M", "M", "F", "F", "M", "M", "M", "M", "M", "F", "F", "M", "F", "M", "M", "M", "F", "F", "M", "M", "M", "M", "M", "F"]
     },
     {
         id: 2,
-        nome: "Carlos Eduardo Santos",
-        matricula: "85286",
-        funcao: "Fisioterapeuta",
-        horario: "07:00 às 19:00 / 19:00 às 07:00",
-        setor: "CTI / UCO",
+        nome: "Jean Leobons Pereira",
+        matricula: "83136",
+        funcao: "Fisioterapeuta Diarista Andar",
+        horario: "2ª a 6ª - 7:00 às 13:00",
+        setor: "Diarista Andar",
         cor: "#00acc1",
-        escala: [
-            { day: 2, code: "PCti", description: "Plantão CTI", shift: "full", partners: [1, 3], handoverTo: 4 },
-            { day: 5, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [5, 6], handoverTo: 7 },
-            { day: 9, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [1, 6], handoverTo: 8 },
-            { day: 12, code: "PCti", description: "Plantão CTI", shift: "full", partners: [3, 4], handoverTo: null },
-            { day: 14, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [1, 8], handoverTo: 9 },
-            { day: 17, code: "PUco", description: "Plantão UCO", shift: "full", partners: [5, 7], handoverTo: null },
-            { day: 20, code: "P", description: "Plantão Geral", shift: "full", partners: [1, 4], handoverTo: 8 },
-            { day: 24, code: "PCti", description: "Plantão CTI", shift: "full", partners: [6, 9], handoverTo: null },
-            { day: 27, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [3, 7], handoverTo: 5 },
-            { day: 28, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [1, 8], handoverTo: 4 },
-            { day: 31, code: "PCti", description: "Plantão CTI", shift: "full", partners: [4, 6], handoverTo: null }
-        ]
+        escala: ["***", "***", "***", "***", "***", "***", "***", "***", "M", "F", "F", "M", "T", "M", "M", "M", "F", "F", "M", "F", "M", "M", "M", "F", "F", "M", "T", "M", "M", "M", "F"]
     },
     {
         id: 3,
-        nome: "Mariana Costa Oliveira",
-        matricula: "85287",
-        funcao: "Fisioterapeuta",
-        horario: "07:00 às 19:00 / 19:00 às 07:00",
-        setor: "CTI / UCO",
+        nome: "Thainá Ferreira Sant'anna",
+        matricula: "84309",
+        funcao: "Fisioterapeuta Diarista CTI/UCO",
+        horario: "2ª a 5ª - 7:00 às 15:00",
+        setor: "CTI/UCO Diurno",
         cor: "#4caf50",
-        escala: [
-            { day: 1, code: "PCti", description: "Plantão CTI", shift: "full", partners: [2, 4], handoverTo: 5 },
-            { day: 4, code: "PCti", description: "Plantão CTI", shift: "full", partners: [1, 2], handoverTo: 6 },
-            { day: 8, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [5, 7], handoverTo: 9 },
-            { day: 11, code: "PCti", description: "Plantão CTI", shift: "full", partners: [1, 5], handoverTo: null },
-            { day: 12, code: "PCti", description: "Plantão CTI", shift: "full", partners: [2, 4], handoverTo: null },
-            { day: 15, code: "PUco", description: "Plantão UCO", shift: "full", partners: [6, 8], handoverTo: null },
-            { day: 18, code: "PCti", description: "Plantão CTI", shift: "full", partners: [1, 5], handoverTo: null },
-            { day: 22, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [4, 9], handoverTo: 6 },
-            { day: 25, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [1, 7], handoverTo: 9 },
-            { day: 27, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [2, 7], handoverTo: 5 },
-            { day: 29, code: "PCti", description: "Plantão CTI", shift: "full", partners: [8, 9], handoverTo: null }
-        ]
+        escala: ["F", "F", "F", "F", "MT", "MT", "MT", "MT", "F", "F", "F", "MT", "MT", "MT", "M", "F", "F", "F", "MT", "F", "MT", "M", "F", "F", "F", "MT", "MT", "MT", "M", "F", "F"]
     },
     {
         id: 4,
-        nome: "Ricardo Almeida Souza",
-        matricula: "85288",
+        nome: "Jefferson Ribeiro de Abreu",
+        matricula: "83178",
         funcao: "Fisioterapeuta",
-        horario: "07:00 às 19:00 / 19:00 às 07:00",
-        setor: "CTI / UCO",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO",
         cor: "#ff9800",
-        escala: [
-            { day: 3, code: "PCti", description: "Plantão CTI", shift: "full", partners: [5, 6], handoverTo: 7 },
-            { day: 6, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [2, 8], handoverTo: 9 },
-            { day: 7, code: "PUco", description: "Plantão UCO", shift: "full", partners: [1], handoverTo: null },
-            { day: 10, code: "PCti", description: "Plantão CTI", shift: "full", partners: [6, 9], handoverTo: null },
-            { day: 12, code: "PCti", description: "Plantão CTI", shift: "full", partners: [2, 3], handoverTo: null },
-            { day: 16, code: "PCti", description: "Plantão CTI", shift: "full", partners: [1, 6], handoverTo: 7 },
-            { day: 19, code: "PUco", description: "Plantão UCO", shift: "full", partners: [5, 8], handoverTo: null },
-            { day: 20, code: "P", description: "Plantão Geral", shift: "full", partners: [1, 2], handoverTo: 8 },
-            { day: 22, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [3, 9], handoverTo: 6 },
-            { day: 26, code: "PCti", description: "Plantão CTI", shift: "full", partners: [7, 9], handoverTo: null },
-            { day: 28, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [1, 2], handoverTo: 4 },
-            { day: 31, code: "PCti", description: "Plantão CTI", shift: "full", partners: [2, 6], handoverTo: null }
-        ]
+        escala: ["F", "P", "M", "F", "F", "P", "F", "F", "P", "M", "F", "F", "P", "F", "F", "P", "M", "F", "F", "P", "F", "F", "P", "M", "F", "F", "P", "F", "F", "P", "M"]
     },
     {
         id: 5,
-        nome: "Fernanda Lima Rodrigues",
-        matricula: "85289",
+        nome: "Rhayane da Silva Baence",
+        matricula: "85025",
         funcao: "Fisioterapeuta",
-        horario: "07:00 às 19:00 / 19:00 às 07:00",
-        setor: "CTI / UCO",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO",
         cor: "#9c27b0",
-        escala: [
-            { day: 2, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [6, 7], handoverTo: 8 },
-            { day: 5, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [2, 6], handoverTo: 7 },
-            { day: 8, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [3, 7], handoverTo: 9 },
-            { day: 11, code: "PCti", description: "Plantão CTI", shift: "full", partners: [1, 3], handoverTo: null },
-            { day: 13, code: "PCti", description: "Plantão CTI", shift: "full", partners: [6, 9], handoverTo: null },
-            { day: 17, code: "PUco", description: "Plantão UCO", shift: "full", partners: [2, 7], handoverTo: null },
-            { day: 18, code: "PCti", description: "Plantão CTI", shift: "full", partners: [1, 3], handoverTo: null },
-            { day: 21, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [8, 9], handoverTo: 4 },
-            { day: 23, code: "PCti", description: "Plantão CTI", shift: "full", partners: [1, 6], handoverTo: null },
-            { day: 26, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [7, 8], handoverTo: 9 },
-            { day: 27, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [2, 3], handoverTo: 5 },
-            { day: 30, code: "PUco", description: "Plantão UCO", shift: "full", partners: [4, 9], handoverTo: null }
-        ]
+        escala: ["F", "F", "F", "MCti", "P", "F", "P", "F", "F", "F", "MCti", "P", "F", "P", "F", "F", "F", "P", "P", "F", "P", "F", "F", "F", "F", "P", "F", "P", "F", "F", "F"]
     },
     {
         id: 6,
-        nome: "Rodrigo Silva Pereira",
-        matricula: "85290",
+        nome: "Pamela Cristina S. Souza Freite",
+        matricula: "85225",
         funcao: "Fisioterapeuta",
-        horario: "07:00 às 19:00 / 19:00 às 07:00",
-        setor: "CTI / UCO",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO",
         cor: "#00bcd4",
-        escala: [
-            { day: 3, code: "PCti", description: "Plantão CTI", shift: "full", partners: [4, 5], handoverTo: 7 },
-            { day: 5, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [2, 5], handoverTo: 7 },
-            { day: 9, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [1, 2], handoverTo: 8 },
-            { day: 10, code: "PCti", description: "Plantão CTI", shift: "full", partners: [4, 9], handoverTo: null },
-            { day: 13, code: "PCti", description: "Plantão CTI", shift: "full", partners: [5, 9], handoverTo: null },
-            { day: 16, code: "PCti", description: "Plantão CTI", shift: "full", partners: [1, 4], handoverTo: 7 },
-            { day: 19, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [7, 8], handoverTo: 9 },
-            { day: 22, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [3, 4], handoverTo: 6 },
-            { day: 23, code: "PCti", description: "Plantão CTI", shift: "full", partners: [1, 5], handoverTo: null },
-            { day: 24, code: "PCti", description: "Plantão CTI", shift: "full", partners: [2, 9], handoverTo: null },
-            { day: 27, code: "PUco", description: "Plantão UCO", shift: "full", partners: [8, 9], handoverTo: null },
-            { day: 30, code: "PCti", description: "Plantão CTI", shift: "full", partners: [1, 7], handoverTo: null },
-            { day: 31, code: "PCti", description: "Plantão CTI", shift: "full", partners: [2, 4], handoverTo: null }
-        ]
+        escala: ["P", "F", "F", "P", "M", "F", "F", "P", "F", "F", "P", "M", "F", "F", "P", "F", "F", "P", "M", "F", "P", "F", "F", "F", "P", "M", "F", "F", "P", "F", "F"]
     },
     {
         id: 7,
-        nome: "Juliana Santos Alves",
-        matricula: "85291",
+        nome: "Francivaldo do Nascimento Mota",
+        matricula: "85245",
         funcao: "Fisioterapeuta",
-        horario: "07:00 às 19:00 / 19:00 às 07:00",
-        setor: "CTI / UCO",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO",
         cor: "#ff5722",
-        escala: [
-            { day: 1, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [8, 9], handoverTo: 2 },
-            { day: 4, code: "PCti", description: "Plantão CTI", shift: "full", partners: [3, 9], handoverTo: null },
-            { day: 8, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [3, 5], handoverTo: 9 },
-            { day: 11, code: "PUco", description: "Plantão UCO", shift: "full", partners: [2, 8], handoverTo: null },
-            { day: 14, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [5, 9], handoverTo: 3 },
-            { day: 16, code: "PCti", description: "Plantão CTI", shift: "full", partners: [1, 4], handoverTo: 7 },
-            { day: 17, code: "PUco", description: "Plantão UCO", shift: "full", partners: [2, 5], handoverTo: null },
-            { day: 19, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [6, 8], handoverTo: 9 },
-            { day: 22, code: "PCti", description: "Plantão CTI", shift: "full", partners: [4, 8], handoverTo: null },
-            { day: 25, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [1, 3], handoverTo: 9 },
-            { day: 26, code: "PCti", description: "Plantão CTI", shift: "full", partners: [4, 9], handoverTo: null },
-            { day: 29, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [8, 9], handoverTo: 2 },
-            { day: 30, code: "PCti", description: "Plantão CTI", shift: "full", partners: [1, 6], handoverTo: null }
-        ]
+        escala: ["M", "P", "F", "P", "F", "F", "F", "M", "P", "P", "F", "F", "P", "F", "F", "M", "P", "F", "F", "P", "F", "F", "M", "P", "F", "F", "P", "F", "F", "M", "P"]
     },
     {
         id: 8,
-        nome: "Lucas Mendes Costa",
-        matricula: "85292",
+        nome: "Alexandra Mellissa Moura de Farias",
+        matricula: "85285",
         funcao: "Fisioterapeuta",
-        horario: "07:00 às 19:00 / 19:00 às 07:00",
-        setor: "CTI / UCO",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO",
         cor: "#8bc34a",
-        escala: [
-            { day: 2, code: "PCti", description: "Plantão CTI", shift: "full", partners: [9, 3], handoverTo: 4 },
-            { day: 6, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [2, 4], handoverTo: 9 },
-            { day: 9, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [1, 2], handoverTo: 8 },
-            { day: 13, code: "PUco", description: "Plantão UCO", shift: "full", partners: [5, 7], handoverTo: null },
-            { day: 14, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [1, 2], handoverTo: 9 },
-            { day: 17, code: "PCti", description: "Plantão CTI", shift: "full", partners: [3, 9], handoverTo: null },
-            { day: 19, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [6, 7], handoverTo: 9 },
-            { day: 20, code: "P", description: "Plantão Geral", shift: "full", partners: [1, 2], handoverTo: 8 },
-            { day: 22, code: "PCti", description: "Plantão CTI", shift: "full", partners: [4, 7], handoverTo: null },
-            { day: 25, code: "PUco", description: "Plantão UCO", shift: "full", partners: [3, 6], handoverTo: null },
-            { day: 26, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [5, 7], handoverTo: 9 },
-            { day: 28, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [1, 2], handoverTo: 4 },
-            { day: 31, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [4, 9], handoverTo: 2 }
-        ]
+        escala: ["F", "F", "F", "PCti", "F", "F", "PUco", "F", "MCti", "F", "PCti", "F", "F", "MCti", "F", "PCti", "F", "PCti", "F", "P", "F", "F", "PCti", "F", "MCti", "F", "F", "MCti", "F", "PCti", "F"]
     },
     {
         id: 9,
-        nome: "Amanda Oliveira Ferreira",
-        matricula: "85293",
+        nome: "Luciana Cordeiro Amaral",
+        matricula: "85042",
         funcao: "Fisioterapeuta",
-        horario: "07:00 às 19:00 / 19:00 às 07:00",
-        setor: "CTI / UCO",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO",
         cor: "#e91e63",
-        escala: [
-            { day: 1, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [7, 8], handoverTo: 2 },
-            { day: 4, code: "PCti", description: "Plantão CTI", shift: "full", partners: [3, 7], handoverTo: null },
-            { day: 8, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [3, 5], handoverTo: 9 },
-            { day: 10, code: "PCti", description: "Plantão CTI", shift: "full", partners: [4, 6], handoverTo: null },
-            { day: 13, code: "PCti", description: "Plantão CTI", shift: "full", partners: [5, 6], handoverTo: null },
-            { day: 14, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [5, 7], handoverTo: 3 },
-            { day: 17, code: "PCti", description: "Plantão CTI", shift: "full", partners: [3, 8], handoverTo: null },
-            { day: 19, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [6, 7], handoverTo: 9 },
-            { day: 21, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [5, 8], handoverTo: 4 },
-            { day: 22, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [3, 4], handoverTo: 6 },
-            { day: 25, code: "MCti", description: "Manhã CTI", shift: "morning", partners: [1, 3], handoverTo: 9 },
-            { day: 26, code: "PCti", description: "Plantão CTI", shift: "full", partners: [4, 7], handoverTo: null },
-            { day: 29, code: "PCti", description: "Plantão CTI", shift: "full", partners: [3, 8], handoverTo: null },
-            { day: 30, code: "PUco", description: "Plantão UCO", shift: "full", partners: [4, 5], handoverTo: null }
-        ]
+        escala: ["MCti", "F", "PCti", "F", "F", "P", "F", "MCti", "F", "PCti", "F", "F", "PCti", "F", "MCti", "F", "PCti", "F", "F", "PCti", "F", "MCti", "F", "PCti", "F", "F", "PCti", "F", "MCti", "F", "PCti"]
+    },
+    {
+        id: 10,
+        nome: "Nivaldo da Silva de Souza",
+        matricula: "85390",
+        funcao: "Fisioterapeuta",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO",
+        cor: "#795548",
+        escala: ["P", "M", "F", "P", "F", "F", "F", "F", "P", "F", "P", "F", "M", "F", "F", "P", "F", "P", "F", "MCti", "F", "F", "P", "F", "P", "F", "M", "F", "F", "P", "F"]
+    },
+    {
+        id: 11,
+        nome: "Carolayne Mattos Rodriguez",
+        matricula: "85052",
+        funcao: "Fisioterapeuta",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO",
+        cor: "#607d8b",
+        escala: ["F", "F", "P", "F", "P", "M", "F", "F", "F", "F", "P", "F", "F", "P", "F", "MCti", "P", "F", "P", "F", "F", "F", "MCti", "F", "P", "F", "F", "P", "F", "MCti", "F"]
+    },
+    {
+        id: 12,
+        nome: "Sabrina de Almeida da Silva",
+        matricula: "84568",
+        funcao: "Fisioterapeuta",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO Diurno",
+        cor: "#2196f3",
+        escala: ["F", "F", "TUco", "F", "PCti", "F", "PCti", "F", "F", "TUco", "F", "PCti", "F", "PCti", "F", "F", "TUco", "F", "PCti", "F", "PCti", "F", "F", "TUco", "F", "PCti", "F", "PCti", "F", "F", "TUco"]
+    },
+    {
+        id: 13,
+        nome: "Tayssa Dias Vieira dos Santos",
+        matricula: "84331",
+        funcao: "Fisioterapeuta",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO Diurno",
+        cor: "#009688",
+        escala: ["PUco", "F", "F", "PUco", "F", "PUco", "F", "PUco", "F", "F", "F", "F", "PUco", "F", "PUco", "F", "F", "F", "F", "PUco", "F", "PUco", "F", "F", "PUco", "F", "PUco", "F", "PUco", "F", "F"]
+    },
+    {
+        id: 14,
+        nome: "Ingrid Fernandes Nogueira",
+        matricula: "84945",
+        funcao: "Fisioterapeuta",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO Diurno",
+        cor: "#673ab7",
+        escala: ["***", "***", "***", "***", "***", "***", "***", "***", "***", "MUco", "F", "PUco", "F", "F", "PCti", "F", "MUco", "F", "PUco", "F", "F", "PCti", "F", "MUco", "F", "PUco", "F", "F", "PCti", "F", "MUco"]
+    },
+    {
+        id: 15,
+        nome: "Fellipe Soares dos Santos Cardoso",
+        matricula: "84313",
+        funcao: "Fisioterapeuta",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO Diurno",
+        cor: "#3f51b5",
+        escala: ["F", "PCti", "MCti", "F", "F", "PCti", "F", "F", "PCti", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***"]
+    },
+    {
+        id: 16,
+        nome: "Mateus Rangel de Araújo",
+        matricula: "85232",
+        funcao: "Fisioterapeuta",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO Diurno",
+        cor: "#00bcd4",
+        escala: ["F", "F", "PUn", "F", "F", "F", "TUn", "PCti", "F", "PUn", "F", "F", "F", "TUn", "PUn", "F", "F", "PUco", "F", "F", "TUn", "PUn", "F", "PUn", "F", "F", "F", "TUn", "PUn", "F", "PUn"]
+    },
+    {
+        id: 17,
+        nome: "Iris Nascimento de Souza",
+        matricula: "84557",
+        funcao: "Fisioterapeuta",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO Diurno",
+        cor: "#ff9800",
+        escala: ["F", "PUco", "F", "F", "PUco", "F", "F", "F", "PUco", "F", "PUco", "PUn", "F", "F", "F", "PUco", "F", "F", "F", "F", "F", "PUn", "PUco", "F", "PCti", "PUn", "F", "F", "F", "PUco", "F"]
+    },
+    {
+        id: 18,
+        nome: "Vitor Celestino da Silva",
+        matricula: "85009",
+        funcao: "Fisioterapeuta",
+        horario: "07:00 às 19:00",
+        setor: "CTI/UCO Diurno",
+        cor: "#4caf50",
+        escala: ["PCti", "F", "MUco", "F", "F", "F", "PUn", "PUn", "F", "MCti", "F", "F", "F", "PUco", "PUn", "F", "MCti", "F", "F", "F", "PUco", "PUn", "F", "MCti", "F", "F", "F", "PUco", "PUn", "F", "MCti"]
+    },
+    {
+        id: 19,
+        nome: "Janaína da Silva Rozas",
+        matricula: "52134",
+        funcao: "Fisioterapeuta",
+        horario: "19:00 às 07:00",
+        setor: "CTI/UCO Noturno",
+        cor: "#9c27b0",
+        escala: ["F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F"]
+    },
+    {
+        id: 20,
+        nome: "Juan Carlos de Lima",
+        matricula: "80424",
+        funcao: "Fisioterapeuta",
+        horario: "19:00 às 07:00",
+        setor: "CTI/UCO Noturno",
+        cor: "#2196f3",
+        escala: ["F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F"]
+    },
+    {
+        id: 21,
+        nome: "Monique Marques de Mendonça Simões",
+        matricula: "82764",
+        funcao: "Fisioterapeuta",
+        horario: "19:00 às 07:00",
+        setor: "CTI/UCO Noturno",
+        cor: "#ff5722",
+        escala: ["F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F"]
+    },
+    {
+        id: 22,
+        nome: "David Clark de Freitas",
+        matricula: "84442",
+        funcao: "Fisioterapeuta",
+        horario: "19:00 às 07:00",
+        setor: "CTI/UCO Noturno",
+        cor: "#795548",
+        escala: ["F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F"]
+    },
+    {
+        id: 23,
+        nome: "Eloisa Priscila Batista Farias",
+        matricula: "84466",
+        funcao: "Fisioterapeuta",
+        horario: "19:00 às 07:00",
+        setor: "CTI/UCO Noturno",
+        cor: "#607d8b",
+        escala: ["P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P"]
+    },
+    {
+        id: 24,
+        nome: "Tatiane Cristina Thomé Ximenes",
+        matricula: "84446",
+        funcao: "Fisioterapeuta",
+        horario: "19:00 às 07:00",
+        setor: "CTI/UCO Noturno",
+        cor: "#673ab7",
+        escala: ["P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "F", "P", "F", "P", "F", "F", "P", "F"]
     }
 ];
 
-// Mapeamento de códigos para descrições completas
-const codeDescriptions = {
-    "F": "Folga",
-    "P": "Plantão Geral",
-    "PCti": "Plantão CTI",
-    "MCti": "Manhã CTI",
-    "PUco": "Plantão UCO",
-    "M": "Manhã",
-    "T": "Tarde",
-    "N": "Noite",
-    "***": "Férias"
-};
+// Sistema inteligente de previsão
+
+// 1. Função para determinar o setor baseado no código
+function getSectorFromCode(code) {
+    if (code.includes("Cti")) return "CTI";
+    if (code.includes("Uco")) return "UCO";
+    if (code === "PUn" || code === "TUn") return "CTI/Noturno";
+    if (code === "P") return "Geral";
+    if (code === "M" || code === "T") return "Geral";
+    if (code === "MT") return "CTI/UCO";
+    return "Geral";
+}
+
+// 2. Função para determinar compatibilidade de turnos
+function areShiftsCompatible(shift1, shift2) {
+    if (!shift1 || !shift2) return false;
+    
+    // Turnos compatíveis para trabalhar juntos
+    const compatibleShifts = {
+        "morning": ["morning", "full"],
+        "afternoon": ["afternoon", "full"],
+        "full": ["morning", "afternoon", "full"],
+        "night": ["night"] // Plantonistas noturnos só trabalham com outros noturnos
+    };
+    
+    return compatibleShifts[shift1]?.includes(shift2) || false;
+}
+
+// 3. Função para encontrar companheiros de trabalho em um dia específico
+function findWorkPartners(employeeId, day) {
+    const employee = fisioterapeutas.find(e => e.id === employeeId);
+    if (!employee) return [];
+    
+    const employeeCode = employee.escala[day - 1];
+    const employeeCodeInfo = codeMap[employeeCode];
+    
+    // Se não é dia de trabalho, não há companheiros
+    if (!employeeCodeInfo || employeeCodeInfo.category !== "work") return [];
+    
+    const employeeSector = getSectorFromCode(employeeCode);
+    const employeeShift = employeeCodeInfo.shift;
+    
+    const partners = [];
+    
+    // Procurar outros funcionários trabalhando no mesmo dia, mesmo setor e turno compatível
+    fisioterapeutas.forEach(otherEmployee => {
+        if (otherEmployee.id === employeeId) return; // Não comparar consigo mesmo
+        
+        const otherCode = otherEmployee.escala[day - 1];
+        const otherCodeInfo = codeMap[otherCode];
+        
+        if (!otherCodeInfo || otherCodeInfo.category !== "work") return;
+        
+        const otherSector = getSectorFromCode(otherCode);
+        const otherShift = otherCodeInfo.shift;
+        
+        // Verificar compatibilidade
+        const sectorsCompatible = 
+            employeeSector === otherSector || 
+            employeeSector === "Geral" || 
+            otherSector === "Geral" ||
+            (employeeSector.includes("CTI") && otherSector.includes("CTI")) ||
+            (employeeSector.includes("UCO") && otherSector.includes("UCO"));
+        
+        const shiftsCompatible = areShiftsCompatible(employeeShift, otherShift);
+        
+        if (sectorsCompatible && shiftsCompatible) {
+            partners.push({
+                id: otherEmployee.id,
+                nome: otherEmployee.nome,
+                code: otherCode,
+                shift: otherShift,
+                time: otherCodeInfo.time
+            });
+        }
+    });
+    
+    return partners;
+}
+
+// 4. Função para prever passagem de plantão
+function findHandoverInfo(employeeId, day) {
+    const employee = fisioterapeutas.find(e => e.id === employeeId);
+    if (!employee) return null;
+    
+    const employeeCode = employee.escala[day - 1];
+    const employeeCodeInfo = codeMap[employeeCode];
+    
+    // Só há passagem de plantão se for um turno que termina
+    if (!employeeCodeInfo || employeeCodeInfo.category !== "work") return null;
+    
+    // Para plantonistas noturnos (19:00-7:00), a passagem é para quem trabalha de manhã
+    if (employeeCodeInfo.shift === "night") {
+        // Procurar quem trabalha no próximo dia de manhã no mesmo setor
+        const nextDay = day + 1;
+        if (nextDay > 31) return null; // Fim do mês
+        
+        const employeeSector = getSectorFromCode(employeeCode);
+        
+        for (const otherEmployee of fisioterapeutas) {
+            if (otherEmployee.id === employeeId) continue;
+            
+            const otherCode = otherEmployee.escala[nextDay - 1];
+            const otherCodeInfo = codeMap[otherCode];
+            
+            if (!otherCodeInfo || otherCodeInfo.category !== "work") continue;
+            
+            const otherSector = getSectorFromCode(otherCode);
+            
+            // Verificar se é turno da manhã no mesmo setor
+            if (otherCodeInfo.shift === "morning" && 
+                (employeeSector === otherSector || 
+                 employeeSector.includes("CTI") && otherSector.includes("CTI") ||
+                 employeeSector.includes("UCO") && otherSector.includes("UCO"))) {
+                return {
+                    toEmployeeId: otherEmployee.id,
+                    nome: otherEmployee.nome,
+                    day: nextDay,
+                    shift: "Manhã"
+                };
+            }
+        }
+    }
+    
+    // Para plantonistas diurnos (7:00-19:00), a passagem é para quem trabalha à noite
+    if (employeeCodeInfo.shift === "full" && employeeCodeInfo.time === "7:00-19:00") {
+        // Procurar quem trabalha à noite no mesmo setor
+        const employeeSector = getSectorFromCode(employeeCode);
+        
+        for (const otherEmployee of fisioterapeutas) {
+            if (otherEmployee.id === employeeId) continue;
+            
+            const otherCode = otherEmployee.escala[day - 1]; // Mesmo dia, turno diferente
+            const otherCodeInfo = codeMap[otherCode];
+            
+            if (!otherCodeInfo || otherCodeInfo.category !== "work") continue;
+            
+            const otherSector = getSectorFromCode(otherCode);
+            
+            // Verificar se é turno da noite no mesmo setor
+            if (otherCodeInfo.shift === "night" && 
+                (employeeSector === otherSector || 
+                 employeeSector.includes("CTI") && otherSector.includes("CTI") ||
+                 employeeSector.includes("UCO") && otherSector.includes("UCO"))) {
+                return {
+                    toEmployeeId: otherEmployee.id,
+                    nome: otherEmployee.nome,
+                    day: day,
+                    shift: "Noite"
+                };
+            }
+        }
+    }
+    
+    // Para quem trabalha apenas de manhã (7:00-13:00), a passagem é para quem trabalha à tarde
+    if (employeeCodeInfo.shift === "morning" && employeeCodeInfo.time === "7:00-13:00") {
+        // Procurar quem trabalha à tarde no mesmo setor
+        const employeeSector = getSectorFromCode(employeeCode);
+        
+        for (const otherEmployee of fisioterapeutas) {
+            if (otherEmployee.id === employeeId) continue;
+            
+            const otherCode = otherEmployee.escala[day - 1]; // Mesmo dia
+            const otherCodeInfo = codeMap[otherCode];
+            
+            if (!otherCodeInfo || otherCodeInfo.category !== "work") continue;
+            
+            const otherSector = getSectorFromCode(otherCode);
+            
+            // Verificar se é turno da tarde no mesmo setor
+            if (otherCodeInfo.shift === "afternoon" && 
+                (employeeSector === otherSector || 
+                 employeeSector.includes("CTI") && otherSector.includes("CTI") ||
+                 employeeSector.includes("UCO") && otherSector.includes("UCO"))) {
+                return {
+                    toEmployeeId: otherEmployee.id,
+                    nome: otherEmployee.nome,
+                    day: day,
+                    shift: "Tarde"
+                };
+            }
+        }
+    }
+    
+    return null;
+}
 
 // Configurações - Janeiro 2026 começa na QUINTA-FEIRA (4)
 const firstDayOfMonth = 4; // Quinta-feira
 const daysInMonth = 31;
 
 // Estado da aplicação
-let currentEmployee = fisioterapeutas[0]; // Começa com Alexandra
+let currentEmployee = fisioterapeutas[7]; // Começa com Alexandra (índice 7)
 let allWorkDays = {};
 
 // Elementos DOM
@@ -267,11 +505,50 @@ const currentHour = today.getHours();
 // Timer para atualização em tempo real
 let updateInterval;
 
+// Função para converter escala de array de códigos para formato do sistema
+function convertEscala(escalaArray) {
+    const workDays = [];
+    
+    for (let day = 1; day <= escalaArray.length; day++) {
+        const code = escalaArray[day - 1];
+        const codeInfo = codeMap[code];
+        
+        if (codeInfo && codeInfo.category === "work") {
+            // Encontrar companheiros para este dia
+            const partners = findWorkPartners(currentEmployee.id, day);
+            
+            // Encontrar passagem de plantão para este dia
+            const handoverTo = findHandoverInfo(currentEmployee.id, day);
+            
+            workDays.push({
+                day: day,
+                code: code,
+                description: codeInfo.description,
+                shift: codeInfo.shift,
+                time: codeInfo.time,
+                partners: partners.map(p => p.id),
+                handoverTo: handoverTo ? handoverTo.toEmployeeId : null,
+                handoverInfo: handoverTo
+            });
+        }
+    }
+    
+    return workDays;
+}
+
 // Inicializar dados de todos os dias de trabalho
 function initializeAllWorkDays() {
     allWorkDays = {};
     fisioterapeutas.forEach(employee => {
-        allWorkDays[employee.id] = employee.escala;
+        // Temporariamente definir como employee atual para calcular companheiros
+        const tempCurrent = currentEmployee;
+        currentEmployee = employee;
+        
+        // Converter a escala do formato PDF para o formato do sistema
+        employee.escalaConvertida = convertEscala(employee.escala);
+        allWorkDays[employee.id] = employee.escalaConvertida;
+        
+        currentEmployee = tempCurrent;
     });
 }
 
@@ -320,7 +597,7 @@ function getNextWorkDays(employee) {
     }
     
     const todayDay = currentDay;
-    const workDays = employee.escala;
+    const workDays = employee.escalaConvertida;
     
     // Verificar se hoje é dia de trabalho
     const todayWorkDay = workDays.find(d => d.day === todayDay);
@@ -367,9 +644,11 @@ function createCurrentStatus(employee) {
     
     if (isTodayWorkDay) {
         // Verificar turno
-        const isNightShift = todayWorkDay.shift === "full" && currentHour >= 19;
-        const isWorkingHours = (todayWorkDay.shift === "morning" && currentHour >= 7 && currentHour < 19) ||
-                             (todayWorkDay.shift === "full" && (currentHour >= 7 && currentHour < 19 || currentHour >= 19 || currentHour < 7));
+        const isNightShift = todayWorkDay.shift === "night";
+        const isWorkingHours = (todayWorkDay.shift === "morning" && currentHour >= 7 && currentHour < 13) ||
+                             (todayWorkDay.shift === "afternoon" && currentHour >= 13 && currentHour < 19) ||
+                             (todayWorkDay.shift === "full" && employee.horario.includes("7:00") && currentHour >= 7 && currentHour < 19) ||
+                             (todayWorkDay.shift === "night" && (currentHour >= 19 || currentHour < 7));
         
         statusEl.className = `current-status ${isNightShift ? 'night' : ''} ${isWorkingHours ? 'pulse' : ''}`;
         
@@ -414,26 +693,31 @@ function initCalendar(employee) {
     // Adicionar dias do mês
     for (let day = 1; day <= daysInMonth; day++) {
         const dayEl = document.createElement('div');
-        const workDay = employee.escala.find(d => d.day === day);
+        const code = employee.escala[day - 1];
+        const codeInfo = codeMap[code];
+        
+        // Verificar se é dia de trabalho
+        const isWorkDay = codeInfo && codeInfo.category === "work";
         
         // Verificar se é hoje
         const isToday = isJanuary2026() && (day === currentDay);
         
         let className = 'day off';
-        let code = "F";
-        let description = "Folga";
-        
-        if (workDay) {
-            code = workDay.code;
-            description = workDay.description;
-            
-            if (workDay.shift === "morning") {
+        if (isWorkDay) {
+            if (codeInfo.shift === "morning") {
                 className = 'day work-morning';
-            } else if (workDay.shift === "night") {
+            } else if (codeInfo.shift === "afternoon") {
+                className = 'day work-afternoon';
+            } else if (codeInfo.shift === "night") {
                 className = 'day work-night';
             } else {
                 className = 'day work';
             }
+        } else if (code === "***") {
+            className = 'day vacation';
+            dayEl.style.backgroundColor = 'rgba(233, 30, 99, 0.1)';
+            dayEl.style.borderColor = '#e91e63';
+            dayEl.style.color = '#c2185b';
         }
         
         if (isToday) className += ' today';
@@ -454,6 +738,7 @@ function initCalendar(employee) {
             
             dayEl.classList.add('selected');
             
+            const workDay = employee.escalaConvertida.find(d => d.day === day);
             if (workDay) {
                 showWorkDayDetails(workDay, employee);
             } else {
@@ -474,7 +759,7 @@ function initWorkDaysList(employee) {
     
     workDaysListEl.innerHTML = '';
     
-    const sortedWorkDays = [...employee.escala].sort((a, b) => a.day - b.day);
+    const sortedWorkDays = [...employee.escalaConvertida].sort((a, b) => a.day - b.day);
     
     if (sortedWorkDays.length === 0) {
         workDaysListEl.innerHTML = '<div class="no-work-days">Nenhum dia de trabalho neste mês</div>';
@@ -489,14 +774,23 @@ function initWorkDaysList(employee) {
         // Verificar se é hoje
         const isToday = isJanuary2026() && (workDay.day === currentDay);
         
+        // Determinar classe baseada no turno
+        let itemClass = 'work-day-item';
+        if (workDay.shift === "morning") itemClass += ' morning';
+        else if (workDay.shift === "afternoon") itemClass += ' afternoon';
+        else if (workDay.shift === "night") itemClass += ' night';
+        else if (workDay.shift === "full") itemClass += ' full';
+        
+        if (isToday) itemClass += ' today';
+        
         // Obter nomes dos companheiros
         const partnerNames = workDay.partners.map(id => getEmployeeNameById(id)).join(', ');
         
-        // Obter nome de quem recebe o plantão
-        const handoverName = workDay.handoverTo ? getEmployeeNameById(workDay.handoverTo) : null;
+        // Obter informação de passagem de plantão
+        const handoverInfo = workDay.handoverInfo;
         
         const workDayItem = document.createElement('div');
-        workDayItem.className = `work-day-item ${workDay.shift === 'morning' ? 'morning' : workDay.shift === 'night' ? 'night' : ''} ${isToday ? 'today' : ''}`;
+        workDayItem.className = itemClass;
         workDayItem.dataset.day = workDay.day;
         
         if (isToday) {
@@ -512,16 +806,17 @@ function initWorkDaysList(employee) {
             <div class="work-day-details">
                 <div class="work-day-code" style="${isToday ? 'background-color: #4caf50;' : ''}">${workDay.code}</div>
                 <div class="work-day-description">${workDay.description}</div>
+                <span class="shift-badge ${workDay.shift || ''}">${workDay.time || ''}</span>
                 
                 ${partnerNames ? `
                     <div class="work-day-partners">
-                        <span style="font-size: 0.7rem; color: #666;">Com:</span>
+                        <span style="font-size: 0.7rem; color: #666;">Provavelmente com:</span>
                         <span class="partner-badge">${partnerNames}</span>
                     </div>
                 ` : ''}
                 
-                ${handoverName ? `
-                    <div class="handover-badge">Passa plantão para: ${handoverName}</div>
+                ${handoverInfo ? `
+                    <div class="handover-badge">Passa plantão para: ${handoverInfo.nome} (${handoverInfo.shift})</div>
                 ` : ''}
                 
                 <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">
@@ -550,7 +845,7 @@ function initWorkDaysList(employee) {
     });
 }
 
-// Inicializar próximos dias de trabalho (COM NOVO ESTILO)
+// Inicializar próximos dias de trabalho
 function initNextWorkDays(employee) {
     if (!employee) return;
     
@@ -578,21 +873,26 @@ function initNextWorkDays(employee) {
             const dayOfWeek = date.toLocaleDateString('pt-BR', { weekday: 'long' });
             const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
             
-            // Obter nomes dos companheiros
-            const partnerNames = todayWorkDay.partners.map(id => getEmployeeNameById(id));
-            
-            // Obter nome de quem recebe o plantão
-            const handoverName = todayWorkDay.handoverTo ? getEmployeeNameById(todayWorkDay.handoverTo) : null;
-            
             const todayItem = document.createElement('div');
             todayItem.className = 'next-day-item today';
             
             // Determinar classe do código baseado no tipo
             let codeClass = '';
-            if (todayWorkDay.code === "PCti") codeClass = 'pcti';
-            if (todayWorkDay.code === "MCti") codeClass = 'mcti';
-            if (todayWorkDay.code === "PUco") codeClass = 'puco';
-            if (todayWorkDay.code === "P") codeClass = 'p';
+            if (todayWorkDay.code === "PCti" || todayWorkDay.code === "P" || todayWorkDay.code === "PUco" || todayWorkDay.code === "PUn") {
+                codeClass = todayWorkDay.code.toLowerCase();
+            } else if (todayWorkDay.code === "MCti" || todayWorkDay.code === "M" || todayWorkDay.code === "MUco") {
+                codeClass = 'm';
+            } else if (todayWorkDay.code === "T" || todayWorkDay.code === "TUco" || todayWorkDay.code === "TUn") {
+                codeClass = 't';
+            } else if (todayWorkDay.code === "MT") {
+                codeClass = 'mt';
+            }
+            
+            // Obter nomes dos companheiros
+            const partnerNames = todayWorkDay.partners.map(id => getEmployeeNameById(id));
+            
+            // Obter informação de passagem de plantão
+            const handoverInfo = todayWorkDay.handoverInfo;
             
             todayItem.innerHTML = `
                 <div class="next-day-date">
@@ -604,11 +904,11 @@ function initNextWorkDays(employee) {
                         <div class="next-day-code ${codeClass}">${todayWorkDay.code}</div>
                         <div class="next-day-shift">${todayWorkDay.description}</div>
                     </div>
-                    <div class="next-day-description">${todayWorkDay.description}</div>
+                    <div class="next-day-description">${todayWorkDay.description} • ${todayWorkDay.time}</div>
                     
                     ${partnerNames.length > 0 ? `
                         <div class="next-day-partners">
-                            <span class="partner-label">Com:</span>
+                            <span class="partner-label">Provavelmente com:</span>
                             ${partnerNames.map(name => `
                                 <span class="partner-badge">
                                     <i class="fas fa-user"></i> ${name}
@@ -617,11 +917,11 @@ function initNextWorkDays(employee) {
                         </div>
                     ` : ''}
                     
-                    ${handoverName ? `
+                    ${handoverInfo ? `
                         <div class="handover-section">
                             <i class="fas fa-exchange-alt handover-icon"></i>
                             <div class="handover-text">
-                                Passa plantão para: <span class="handover-name">${handoverName}</span>
+                                Passa plantão para: <span class="handover-name">${handoverInfo.nome}</span> (${handoverInfo.shift})
                             </div>
                         </div>
                     ` : ''}
@@ -657,18 +957,23 @@ function initNextWorkDays(employee) {
                     distanceText = `Em ${daysUntil} dias`;
                 }
                 
+                // Determinar classe do código baseado no tipo
+                let codeClass = '';
+                if (workDay.code === "PCti" || workDay.code === "P" || workDay.code === "PUco" || workDay.code === "PUn") {
+                    codeClass = workDay.code.toLowerCase();
+                } else if (workDay.code === "MCti" || workDay.code === "M" || workDay.code === "MUco") {
+                    codeClass = 'm';
+                } else if (workDay.code === "T" || workDay.code === "TUco" || workDay.code === "TUn") {
+                    codeClass = 't';
+                } else if (workDay.code === "MT") {
+                    codeClass = 'mt';
+                }
+                
                 // Obter nomes dos companheiros
                 const partnerNames = workDay.partners.map(id => getEmployeeNameById(id));
                 
-                // Obter nome de quem recebe o plantão
-                const handoverName = workDay.handoverTo ? getEmployeeNameById(workDay.handoverTo) : null;
-                
-                // Determinar classe do código baseado no tipo
-                let codeClass = '';
-                if (workDay.code === "PCti") codeClass = 'pcti';
-                if (workDay.code === "MCti") codeClass = 'mcti';
-                if (workDay.code === "PUco") codeClass = 'puco';
-                if (workDay.code === "P") codeClass = 'p';
+                // Obter informação de passagem de plantão
+                const handoverInfo = workDay.handoverInfo;
                 
                 const dayItem = document.createElement('div');
                 dayItem.className = 'next-day-item';
@@ -683,11 +988,11 @@ function initNextWorkDays(employee) {
                             <div class="next-day-code ${codeClass}">${workDay.code}</div>
                             <div class="next-day-shift">${workDay.description}</div>
                         </div>
-                        <div class="next-day-description">${workDay.description}</div>
+                        <div class="next-day-description">${workDay.description} • ${workDay.time}</div>
                         
                         ${partnerNames.length > 0 ? `
                             <div class="next-day-partners">
-                                <span class="partner-label">Com:</span>
+                                <span class="partner-label">Provavelmente com:</span>
                                 ${partnerNames.map(name => `
                                     <span class="partner-badge">
                                         <i class="fas fa-user"></i> ${name}
@@ -696,11 +1001,11 @@ function initNextWorkDays(employee) {
                             </div>
                         ` : ''}
                         
-                        ${handoverName ? `
+                        ${handoverInfo ? `
                             <div class="handover-section">
                                 <i class="fas fa-exchange-alt handover-icon"></i>
                                 <div class="handover-text">
-                                    Passa plantão para: <span class="handover-name">${handoverName}</span>
+                                    Passa plantão para: <span class="handover-name">${handoverInfo.nome}</span> (${handoverInfo.shift})
                                 </div>
                             </div>
                         ` : ''}
@@ -728,73 +1033,141 @@ function initNextWorkDays(employee) {
     }
 }
 
-// Inicializar informações de companheiros
+// Inicializar informações de companheiros (com sistema de previsão)
 function initPartnerInfo(employee) {
     if (!employee) return;
     
     partnerInfoEl.innerHTML = '';
     handoverInfoEl.innerHTML = '';
     
-    // Coletar todos os companheiros únicos
-    const allPartners = new Set();
-    const handovers = new Set();
+    // Coletar todos os companheiros únicos com informações detalhadas
+    const allPartners = {};
+    const handovers = {};
     
-    employee.escala.forEach(workDay => {
+    employee.escalaConvertida.forEach(workDay => {
+        // Companheiros
         workDay.partners.forEach(partnerId => {
-            allPartners.add(partnerId);
+            if (!allPartners[partnerId]) {
+                const partner = getEmployeeById(partnerId);
+                if (partner) {
+                    allPartners[partnerId] = {
+                        ...partner,
+                        daysWith: [],
+                        totalDays: 0
+                    };
+                }
+            }
+            
+            if (allPartners[partnerId]) {
+                allPartners[partnerId].daysWith.push(workDay.day);
+                allPartners[partnerId].totalDays++;
+            }
         });
         
-        if (workDay.handoverTo) {
-            handovers.add(workDay.handoverTo);
+        // Passagem de plantão
+        if (workDay.handoverInfo) {
+            const handoverId = workDay.handoverInfo.toEmployeeId;
+            if (!handovers[handoverId]) {
+                const handoverEmployee = getEmployeeById(handoverId);
+                if (handoverEmployee) {
+                    handovers[handoverId] = {
+                        ...handoverEmployee,
+                        days: [],
+                        totalDays: 0
+                    };
+                }
+            }
+            
+            if (handovers[handoverId]) {
+                handovers[handoverId].days.push({
+                    day: workDay.day,
+                    shift: workDay.handoverInfo.shift
+                });
+                handovers[handoverId].totalDays++;
+            }
         }
     });
     
     // Adicionar companheiros
-    if (allPartners.size === 0) {
-        partnerInfoEl.innerHTML = '<div class="no-work-days">Não há companheiros de trabalho registrados</div>';
+    const partnerKeys = Object.keys(allPartners);
+    if (partnerKeys.length === 0) {
+        partnerInfoEl.innerHTML = `
+            <div class="no-work-days">
+                Com base na escala, não foi possível identificar companheiros de trabalho regulares.<br>
+                Isso pode ocorrer por turnos diferentes ou setores distintos.
+            </div>
+        `;
     } else {
-        allPartners.forEach(partnerId => {
-            const partner = getEmployeeById(partnerId);
-            if (partner) {
-                const partnerItem = document.createElement('div');
-                partnerItem.className = 'partner-item';
-                
-                // Contar quantos dias trabalham juntos
-                const daysTogether = employee.escala.filter(workDay => 
-                    workDay.partners.includes(partnerId)
-                ).length;
-                
-                partnerItem.innerHTML = `
-                    <div style="flex: 1;">
-                        <div class="partner-name">${partner.nome}</div>
-                        <div class="partner-shift">Matrícula: ${partner.matricula} | Trabalham juntos em ${daysTogether} dia(s)</div>
+        partnerInfoEl.innerHTML = `
+            <div style="margin-bottom: 15px;">
+                <h4 style="color: var(--primary); font-size: 0.9rem; margin-bottom: 8px;">
+                    <i class="fas fa-users"></i> Companheiros de Trabalho Previstos
+                </h4>
+                <p style="font-size: 0.75rem; color: var(--gray); margin-bottom: 10px;">
+                    Com base nas escalas, estes são os colegas que provavelmente trabalham com você:
+                </p>
+            </div>
+        `;
+        
+        Object.values(allPartners).forEach(partner => {
+            const partnerItem = document.createElement('div');
+            partnerItem.className = 'partner-item';
+            
+            partnerItem.innerHTML = `
+                <div style="flex: 1;">
+                    <div class="partner-name">${partner.nome}</div>
+                    <div class="partner-shift">Matrícula: ${partner.matricula} | Trabalham juntos em ${partner.totalDays} dia(s)</div>
+                    
+                    <div class="partner-details">
+                        <div style="font-size: 0.7rem; color: var(--primary); margin-bottom: 5px;">
+                            Dias: ${partner.daysWith.join(', ')}
+                        </div>
+                        <div style="font-size: 0.7rem; color: var(--gray);">
+                            Setor: ${partner.setor} | Horário: ${partner.horario}
+                        </div>
                     </div>
-                `;
-                
-                partnerInfoEl.appendChild(partnerItem);
-            }
+                </div>
+            `;
+            
+            partnerInfoEl.appendChild(partnerItem);
         });
     }
     
     // Adicionar informações de passagem de plantão
-    if (handovers.size === 0) {
-        handoverInfoEl.innerHTML = '<div class="no-work-days">Não há registros de passagem de plantão</div>';
+    const handoverKeys = Object.keys(handovers);
+    if (handoverKeys.length === 0) {
+        handoverInfoEl.innerHTML = `
+            <div class="no-work-days">
+                Com base na escala, não foi identificada passagem regular de plantão.<br>
+                Isso pode ocorrer por ser o único plantonista no setor ou turno.
+            </div>
+        `;
     } else {
-        let handoverHTML = '<div class="handover-label">Este mês você passará o plantão para:</div><ul style="margin-top: 8px; padding-left: 20px;">';
+        let handoverHTML = `
+            <div class="handover-label" style="font-size: 0.9rem; margin-bottom: 10px;">
+                <i class="fas fa-exchange-alt"></i> Previsão de Passagem de Plantão
+            </div>
+            <p style="font-size: 0.75rem; color: var(--gray); margin-bottom: 15px;">
+                Com base nos turnos e setores, você provavelmente passará o plantão para:
+            </p>
+        `;
         
-        handovers.forEach(handoverId => {
-            const handoverEmployee = getEmployeeById(handoverId);
-            if (handoverEmployee) {
-                // Contar quantas vezes passa plantão para esta pessoa
-                const handoverCount = employee.escala.filter(workDay => 
-                    workDay.handoverTo === handoverId
-                ).length;
-                
-                handoverHTML += `<li style="margin-bottom: 5px;"><strong>${handoverEmployee.nome.split(' ')[0]}</strong> - ${handoverCount} vez(es)</li>`;
-            }
+        Object.values(handovers).forEach(handover => {
+            const daysList = handover.days.map(d => `Dia ${d.day} (${d.shift})`).join(', ');
+            
+            handoverHTML += `
+                <div class="partner-item" style="margin-bottom: 10px;">
+                    <div style="flex: 1;">
+                        <div class="partner-name">${handover.nome}</div>
+                        <div class="partner-shift">Matrícula: ${handover.matricula} | ${handover.totalDays} vez(es) no mês</div>
+                        <div style="font-size: 0.7rem; color: var(--gray); margin-top: 5px;">
+                            Dias previstos: ${daysList}
+                        </div>
+                    </div>
+                </div>
+            `;
         });
         
-        handoverHTML += '</ul>';
         handoverInfoEl.innerHTML = handoverHTML;
     }
 }
@@ -811,7 +1184,7 @@ function updateEmployeeInfo(employee) {
         { label: "Função:", value: employee.funcao },
         { label: "Horário:", value: employee.horario },
         { label: "Setor:", value: employee.setor },
-        { label: "Dias de Trabalho:", value: employee.escala.length }
+        { label: "Dias de Trabalho:", value: employee.escalaConvertida.length }
     ];
     
     infoItems.forEach(item => {
@@ -835,7 +1208,7 @@ function updateEmployeeInfo(employee) {
 function updateStatistics(employee) {
     if (!employee) return;
     
-    const workDaysCount = employee.escala.length;
+    const workDaysCount = employee.escalaConvertida.length;
     const offDaysCount = daysInMonth - workDaysCount;
     
     totalWorkDaysEl.textContent = workDaysCount;
@@ -850,7 +1223,7 @@ function updateStatisticsDisplay(employee) {
     
     // Contar códigos
     const codeCounts = {};
-    employee.escala.forEach(workDay => {
+    employee.escalaConvertida.forEach(workDay => {
         if (!codeCounts[workDay.code]) {
             codeCounts[workDay.code] = 0;
         }
@@ -867,10 +1240,13 @@ function updateStatisticsDisplay(employee) {
         
         // Gerar cor baseada no código
         let color = employee.cor;
-        if (code === "PCti") color = "#00acc1";
-        if (code === "MCti") color = "#4caf50";
-        if (code === "PUco") color = "#ff9800";
-        if (code === "P") color = "#3a57e8";
+        const codeInfo = codeMap[code];
+        if (codeInfo) {
+            if (codeInfo.shift === "morning") color = "#4caf50";
+            else if (codeInfo.shift === "afternoon") color = "#ff9800";
+            else if (codeInfo.shift === "night") color = "#9c27b0";
+            else if (codeInfo.shift === "full") color = "#3a57e8";
+        }
         
         codeItem.innerHTML = `
             <div class="code-badge" style="background-color: ${color};">${code}</div>
@@ -887,24 +1263,39 @@ function updateStatisticsDisplay(employee) {
 function updateLegendDisplay() {
     legendCodesEl.innerHTML = '';
     
-    Object.keys(codeDescriptions).forEach(code => {
+    // Legenda completa baseada no PDF
+    const legendCodes = {
+        "F": "Folga",
+        "M": "Manhã",
+        "T": "Tarde", 
+        "MT": "Manhã e Tarde",
+        "P": "Plantão Geral",
+        "MCti": "Manhã CTI",
+        "PCti": "Plantão CTI",
+        "PUco": "Plantão UCO",
+        "TUco": "Tarde UCO",
+        "MUco": "Manhã UCO",
+        "PUn": "Plantão Noturno",
+        "TUn": "Tarde Noturno",
+        "***": "Férias"
+    };
+    
+    Object.keys(legendCodes).forEach(code => {
         const codeItem = document.createElement('div');
         codeItem.className = 'code-item';
         
         // Gerar cor baseada no código
         let color = "#3a57e8";
         if (code === "F") color = "#6c757d";
-        if (code === "PCti") color = "#00acc1";
-        if (code === "MCti") color = "#4caf50";
-        if (code === "PUco") color = "#ff9800";
-        if (code === "M") color = "#4caf50";
-        if (code === "T") color = "#ff9800";
-        if (code === "N") color = "#9c27b0";
-        if (code === "***") color = "#e91e63";
+        else if (code === "M" || code === "MCti" || code === "MUco") color = "#4caf50";
+        else if (code === "T" || code === "TUco" || code === "TUn") color = "#ff9800";
+        else if (code === "MT") color = "#4caf50";
+        else if (code === "P" || code === "PCti" || code === "PUco" || code === "PUn") color = "#3a57e8";
+        else if (code === "***") color = "#e91e63";
         
         codeItem.innerHTML = `
             <div class="code-badge" style="background-color: ${color};">${code}</div>
-            <div class="code-desc">${codeDescriptions[code]}</div>
+            <div class="code-desc">${legendCodes[code]}</div>
         `;
         
         legendCodesEl.appendChild(codeItem);
@@ -920,20 +1311,20 @@ function showWorkDayDetails(workDay, employee) {
     // Obter nomes dos companheiros
     const partnerNames = workDay.partners.map(id => getEmployeeNameById(id)).join(', ');
     
-    // Obter nome de quem recebe o plantão
-    const handoverName = workDay.handoverTo ? getEmployeeNameById(workDay.handoverTo) : null;
+    // Obter informação de passagem de plantão
+    const handoverInfo = workDay.handoverInfo;
     
     let details = `📅 ${capitalizedDay}, ${workDay.day} de Janeiro de 2026\n\n`;
     details += `🏥 ${workDay.description} (${workDay.code})\n`;
-    details += `⏰ Horário: ${employee.horario}\n`;
+    details += `⏰ Horário: ${workDay.time || employee.horario}\n`;
     details += `📍 Setor: ${employee.setor}\n`;
     
     if (partnerNames) {
-        details += `\n👥 Trabalha com: ${partnerNames}\n`;
+        details += `\n👥 Provavelmente trabalha com: ${partnerNames}\n`;
     }
     
-    if (handoverName) {
-        details += `\n🔄 Passa plantão para: ${handoverName}\n`;
+    if (handoverInfo) {
+        details += `\n🔄 Previsão de passagem de plantão para: ${handoverInfo.nome} (${handoverInfo.shift})\n`;
     }
     
     alert(details);
@@ -943,7 +1334,8 @@ function showDayDetails(day, code) {
     const date = new Date(2026, 0, day);
     const dayOfWeek = date.toLocaleDateString('pt-BR', { weekday: 'long' });
     const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
-    const description = codeDescriptions[code] || "Desconhecido";
+    const codeInfo = codeMap[code];
+    const description = codeInfo ? codeInfo.description : "Desconhecido";
     
     alert(`📅 ${capitalizedDay}, ${day} de Janeiro de 2026\n\n${description} (${code})`);
 }
@@ -1012,6 +1404,9 @@ function loadEmployeeData(employeeId) {
         currentEmployee = employee;
         currentEmployeeNameEl.textContent = employee.nome.split(' ')[0] + ' ' + employee.nome.split(' ')[1];
         
+        // Converter escala para o formato do sistema com previsões
+        employee.escalaConvertida = convertEscala(employee.escala);
+        
         // Atualizar todas as visualizações
         createCurrentStatus(employee);
         initCalendar(employee);
@@ -1066,18 +1461,17 @@ function populateEmployeeSelector() {
         employeeSelectEl.appendChild(option);
     });
     
-    // Selecionar Alexandra por padrão
-    employeeSelectEl.value = "1";
+    // Selecionar Alexandra por padrão (id 8)
+    employeeSelectEl.value = "8";
 }
 
 // Inicializar a aplicação
 function initApp() {
-    // Inicializar dados
-    initializeAllWorkDays();
+    // Popular seletor
     populateEmployeeSelector();
     
-    // Carregar dados do primeiro funcionário
-    loadEmployeeData(1);
+    // Carregar dados do primeiro funcionário (Alexandra)
+    loadEmployeeData(8);
     
     // Configurar eventos
     setupEventListeners();

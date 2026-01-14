@@ -985,3 +985,129 @@ select option {
     color: var(--quaternary);
     margin-right: 5px;
 }
+
+/* Adicione estas classes no CSS existente */
+
+.day.work-afternoon {
+    background-color: rgba(255, 193, 7, 0.1);
+    border-color: #ffc107;
+    color: #ff8f00;
+}
+
+.legend-work-afternoon {
+    background-color: rgba(255, 193, 7, 0.1);
+    border: 1px solid #ffc107;
+}
+
+.next-day-item .next-day-code.m {
+    background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+}
+
+.next-day-item .next-day-code.t {
+    background: linear-gradient(135deg, #ff9800 0%, #ef6c00 100%);
+}
+
+.next-day-item .next-day-code.mt {
+    background: linear-gradient(135deg, #4caf50 0%, #ff9800 100%);
+}
+
+.next-day-item .next-day-code.tuco {
+    background: linear-gradient(135deg, #ff9800 0%, #ef6c00 100%);
+}
+
+.next-day-item .next-day-code.muco {
+    background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+}
+
+.next-day-item .next-day-code.pun {
+    background: linear-gradient(135deg, #9c27b0 0%, #6a1b9a 100%);
+}
+
+.next-day-item .next-day-code.tun {
+    background: linear-gradient(135deg, #ff9800 0%, #ef6c00 100%);
+}
+
+/* Adicione ao final do CSS existente */
+
+/* Estilos para turnos diferentes */
+.work-day-item.afternoon {
+    background-color: rgba(255, 193, 7, 0.05);
+    border-left-color: #ffc107;
+}
+
+.work-day-item.vacation {
+    background-color: rgba(233, 30, 99, 0.05);
+    border-left-color: #e91e63;
+}
+
+/* Estilos para badges de turnos */
+.shift-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+.shift-badge.morning {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #2e7d32;
+}
+
+.shift-badge.afternoon {
+    background-color: rgba(255, 152, 0, 0.2);
+    color: #ef6c00;
+}
+
+.shift-badge.night {
+    background-color: rgba(156, 39, 176, 0.2);
+    color: #7b1fa2;
+}
+
+.shift-badge.full {
+    background-color: rgba(58, 87, 232, 0.2);
+    color: #2a46d0;
+}
+
+/* Melhorias para informações de equipe */
+.partner-details {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: rgba(0, 172, 193, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid var(--secondary);
+}
+
+.partner-day {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 6px;
+    background-color: white;
+    border-radius: 6px;
+}
+
+.partner-day-date {
+    min-width: 40px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.9rem;
+}
+
+.partner-day-info {
+    flex: 1;
+    margin-left: 10px;
+}
+
+.partner-day-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.partner-day-shift {
+    font-size: 0.7rem;
+    color: var(--gray);
+}
