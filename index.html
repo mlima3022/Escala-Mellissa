@@ -3,733 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Escala - Alexandra Melissa</title>
+    <title>Sistema de Escalas - Fisioterapeutas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Reset e variáveis */
-        :root {
-            --primary: #3a57e8;
-            --primary-dark: #2a46d0;
-            --secondary: #00acc1;
-            --light: #f8f9ff;
-            --dark: #182848;
-            --gray: #6c757d;
-            --light-gray: #e9ecef;
-            --success: #4caf50;
-            --warning: #ff9800;
-            --border-radius: 12px;
-            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --transition: all 0.3s ease;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        html {
-            font-size: 16px;
-            scroll-behavior: smooth;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background-color: var(--light);
-            color: var(--dark);
-            line-height: 1.5;
-            padding: 0;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 100%;
-            padding: 15px;
-        }
-        
-        /* Header */
-        .mobile-header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 20px 15px;
-            border-radius: 0 0 var(--border-radius) var(--border-radius);
-            box-shadow: var(--box-shadow);
-            margin-bottom: 20px;
-        }
-        
-        .mobile-header h1 {
-            font-size: 1.4rem;
-            margin-bottom: 5px;
-            font-weight: 700;
-        }
-        
-        .mobile-header p {
-            font-size: 0.95rem;
-            opacity: 0.9;
-        }
-        
-        .header-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-        }
-        
-        .month-nav {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .nav-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .nav-btn:active {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(0.95);
-        }
-        
-        .current-month {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        
-        .print-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .print-btn:active {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        /* Cards */
-        .card {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--box-shadow);
-            transition: var(--transition);
-        }
-        
-        .card:active {
-            transform: translateY(-2px);
-        }
-        
-        .card-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .card-title i {
-            color: var(--primary);
-        }
-        
-        /* Employee Info */
-        .employee-info {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-        
-        .info-item {
-            display: flex;
-            align-items: center;
-        }
-        
-        .info-label {
-            font-weight: 600;
-            min-width: 110px;
-            color: var(--primary);
-            font-size: 0.95rem;
-        }
-        
-        .info-value {
-            color: var(--dark);
-            font-size: 0.95rem;
-        }
-        
-        /* Calendar - CORRIGIDO PERFEITAMENTE */
-        .calendar-wrapper {
-            width: 100%;
-            overflow: hidden;
-            border-radius: 10px;
-            background: white;
-            padding: 5px;
-        }
-        
-        .weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
-            margin-bottom: 4px;
-            text-align: center;
-            width: 100%;
-        }
-        
-        .weekday {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--gray);
-            padding: 8px 2px;
-            text-align: center;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
-            width: 100%;
-        }
-        
-        .day {
-            aspect-ratio: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            transition: var(--transition);
-            position: relative;
-            padding: 3px;
-            border: 1px solid transparent;
-            min-height: 42px;
-            width: 100%;
-        }
-        
-        .day-number {
-            font-weight: 600;
-            margin-bottom: 1px;
-            font-size: 0.85rem;
-        }
-        
-        .day-code {
-            font-size: 0.6rem;
-            font-weight: 600;
-        }
-        
-        .day.work {
-            background-color: rgba(0, 172, 193, 0.1);
-            border-color: var(--secondary);
-            color: #006064;
-        }
-        
-        .day.off {
-            background-color: var(--light-gray);
-            color: var(--gray);
-        }
-        
-        .day.empty {
-            visibility: hidden;
-            border: none;
-            background: transparent;
-            pointer-events: none;
-        }
-        
-        .day.today {
-            position: relative;
-            border-color: var(--warning);
-            background-color: rgba(255, 152, 0, 0.1);
-        }
-        
-        .day.today .day-number {
-            font-weight: 800;
-            color: var(--warning);
-        }
-        
-        .day.selected {
-            box-shadow: 0 0 0 2px rgba(58, 87, 232, 0.3);
-            transform: scale(1.05);
-            z-index: 10;
-        }
-        
-        /* Legend */
-        .legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-            justify-content: center;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.75rem;
-        }
-        
-        .legend-color {
-            width: 14px;
-            height: 14px;
-            border-radius: 3px;
-        }
-        
-        .legend-work {
-            background-color: rgba(0, 172, 193, 0.1);
-            border: 1px solid var(--secondary);
-        }
-        
-        .legend-off {
-            background-color: var(--light-gray);
-            border: 1px solid var(--gray);
-        }
-        
-        /* Work Days List */
-        .work-days-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .work-day-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            background-color: rgba(0, 172, 193, 0.05);
-            border-radius: 8px;
-            border-left: 4px solid var(--secondary);
-        }
-        
-        .work-day-date {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 60px;
-            padding-right: 12px;
-            border-right: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        
-        .work-day-number {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        
-        .work-day-weekday {
-            font-size: 0.7rem;
-            color: var(--gray);
-            text-transform: uppercase;
-        }
-        
-        .work-day-details {
-            padding-left: 12px;
-            flex: 1;
-        }
-        
-        .work-day-code {
-            display: inline-block;
-            background-color: var(--primary);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .work-day-description {
-            font-size: 0.85rem;
-            color: var(--dark);
-        }
-        
-        /* Next Work Days - ATUALIZADO EM TEMPO REAL */
-        .next-work-days-container {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .next-day-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 12px;
-            background-color: white;
-            border-radius: 8px;
-            border-left: 4px solid var(--secondary);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        
-        .next-day-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-        }
-        
-        .next-day-date {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 45px;
-        }
-        
-        .next-day-number {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        
-        .next-day-weekday {
-            font-size: 0.65rem;
-            color: var(--gray);
-        }
-        
-        .next-day-details {
-            flex: 1;
-        }
-        
-        .next-day-code {
-            display: inline-block;
-            background-color: var(--primary);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 12px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-        
-        .next-day-description {
-            font-size: 0.8rem;
-            color: var(--dark);
-        }
-        
-        .next-day-distance {
-            font-size: 0.7rem;
-            color: var(--gray);
-            font-style: italic;
-            margin-top: 2px;
-        }
-        
-        /* Current Work Status */
-        .current-status {
-            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        .current-status.off {
-            background: linear-gradient(135deg, #ff9800 0%, #ef6c00 100%);
-        }
-        
-        .status-text {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .status-subtext {
-            font-size: 0.75rem;
-            opacity: 0.9;
-            margin-top: 3px;
-        }
-        
-        /* Codes Grid */
-        .codes-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-        
-        .code-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px;
-            background-color: var(--light-gray);
-            border-radius: 6px;
-        }
-        
-        .code-badge {
-            min-width: 45px;
-            background-color: var(--primary);
-            color: white;
-            padding: 4px;
-            border-radius: 5px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 0.75rem;
-        }
-        
-        .code-desc {
-            font-size: 0.8rem;
-            color: var(--dark);
-        }
-        
-        /* Summary Card */
-        .summary-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 15px;
-            border-radius: var(--border-radius);
-            margin-bottom: 15px;
-            box-shadow: var(--box-shadow);
-        }
-        
-        .summary-stats {
-            display: flex;
-            justify-content: space-between;
-            text-align: center;
-            margin-top: 12px;
-        }
-        
-        .stat {
-            flex: 1;
-        }
-        
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-        
-        .stat-label {
-            font-size: 0.75rem;
-            opacity: 0.9;
-            margin-top: 3px;
-        }
-        
-        /* Tab Navigation */
-        .tab-container {
-            position: sticky;
-            top: 0;
-            z-index: 90;
-            background-color: white;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--light-gray);
-        }
-        
-        .tabs {
-            display: flex;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            padding: 0 10px;
-        }
-        
-        .tabs::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .tab {
-            flex: 0 0 auto;
-            padding: 12px 15px;
-            font-weight: 600;
-            color: var(--gray);
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
-            transition: var(--transition);
-            font-size: 0.85rem;
-        }
-        
-        .tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-        
-        /* Tab Content */
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: white;
-            border-top: 1px solid var(--light-gray);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            z-index: 100;
-            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
-        }
-        
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--gray);
-            text-decoration: none;
-            font-size: 0.7rem;
-            padding: 4px;
-            transition: var(--transition);
-            flex: 1;
-        }
-        
-        .nav-item i {
-            font-size: 1.1rem;
-            margin-bottom: 3px;
-        }
-        
-        .nav-item.active {
-            color: var(--primary);
-        }
-        
-        .main-content {
-            padding-bottom: 65px; /* Espaço para a navegação inferior */
-        }
-        
-        /* Responsividade adicional */
-        @media (min-width: 768px) {
-            .container {
-                max-width: 750px;
-                margin: 0 auto;
-                padding: 20px;
-            }
-            
-            .mobile-header {
-                padding: 25px 20px;
-            }
-            
-            .mobile-header h1 {
-                font-size: 1.6rem;
-            }
-            
-            .codes-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .day {
-                min-height: 55px;
-            }
-        }
-        
-        @media (max-width: 350px) {
-            .day {
-                min-height: 38px;
-                font-size: 0.7rem;
-                padding: 2px;
-            }
-            
-            .day-number {
-                font-size: 0.75rem;
-            }
-            
-            .day-code {
-                font-size: 0.55rem;
-            }
-            
-            .weekday {
-                font-size: 0.7rem;
-                padding: 6px 1px;
-            }
-        }
-        
-        /* Animações */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.4s ease forwards;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        /* Utilitários */
-        .hidden {
-            display: none !important;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        .mb-10 {
-            margin-bottom: 10px;
-        }
-        
-        .mb-15 {
-            margin-bottom: 15px;
-        }
-        
-        .mt-10 {
-            margin-top: 10px;
-        }
-        
-        .mt-20 {
-            margin-top: 20px;
-        }
-        
-        .no-work-days {
-            text-align: center;
-            padding: 15px;
-            color: var(--gray);
-            font-style: italic;
-            font-size: 0.85rem;
-        }
-        
-        .last-updated {
-            text-align: center;
-            font-size: 0.7rem;
-            color: var(--gray);
-            margin-top: 10px;
-            font-style: italic;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Header móvel -->
     <div class="mobile-header">
-        <h1>Alexandra Melissa</h1>
+        <h1 id="current-employee-name">Selecione um Fisioterapeuta</h1>
         <p>Escala de Trabalho - Janeiro 2026</p>
         
         <div class="header-actions">
+            <div class="employee-selector">
+                <select id="employee-select">
+                    <option value="">Selecione um fisioterapeuta...</option>
+                    <!-- Opções serão preenchidas por JavaScript -->
+                </select>
+            </div>
+            
             <div class="month-nav">
                 <button class="nav-btn" id="prev-month">
                     <i class="fas fa-chevron-left"></i>
@@ -739,11 +30,6 @@
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
-            
-            <button class="print-btn" id="print-btn">
-                <i class="fas fa-print"></i>
-                <span>Salvar</span>
-            </button>
         </div>
     </div>
     
@@ -758,13 +44,13 @@
                 <i class="fas fa-list-check"></i>
                 <span>Dias de Trabalho</span>
             </div>
+            <div class="tab" data-tab="partners">
+                <i class="fas fa-user-group"></i>
+                <span>Companheiros</span>
+            </div>
             <div class="tab" data-tab="info">
                 <i class="fas fa-user"></i>
                 <span>Informações</span>
-            </div>
-            <div class="tab" data-tab="legend">
-                <i class="fas fa-key"></i>
-                <span>Legenda</span>
             </div>
         </div>
     </div>
@@ -777,18 +63,18 @@
         
         <!-- Resumo -->
         <div class="summary-card">
-            <h2 class="mb-10">Resumo do Mês</h2>
+            <h2 class="mb-10" id="summary-title">Resumo do Mês</h2>
             <div class="summary-stats">
                 <div class="stat">
-                    <div class="stat-value" id="total-work-days">12</div>
+                    <div class="stat-value" id="total-work-days">0</div>
                     <div class="stat-label">Dias de Trabalho</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value" id="total-off-days">19</div>
+                    <div class="stat-value" id="total-off-days">0</div>
                     <div class="stat-label">Dias de Folga</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value" id="next-work-in">0</div>
+                    <div class="stat-value" id="next-work-in">-</div>
                     <div class="stat-label" id="next-work-label">Próximo trabalho</div>
                 </div>
             </div>
@@ -800,7 +86,7 @@
             <div class="card">
                 <h3 class="card-title">
                     <i class="fas fa-calendar-days"></i>
-                    Calendário de Janeiro 2026
+                    <span id="calendar-title">Calendário de Janeiro 2026</span>
                 </h3>
                 
                 <div class="calendar-wrapper">
@@ -821,8 +107,16 @@
                 
                 <div class="legend mt-20">
                     <div class="legend-item">
+                        <div class="legend-color legend-work-morning"></div>
+                        <span>Dia - Manhã/Tarde</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-work-night"></div>
+                        <span>Plantão Noturno</span>
+                    </div>
+                    <div class="legend-item">
                         <div class="legend-color legend-work"></div>
-                        <span>Dia de Trabalho</span>
+                        <span>Plantão Completo</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color legend-off"></div>
@@ -870,35 +164,44 @@
             </div>
         </div>
         
+        <!-- Aba Companheiros -->
+        <div id="partners-tab" class="tab-content">
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-user-group"></i>
+                    Equipe de Trabalho
+                </h3>
+                
+                <div class="partner-info-container" id="partner-info">
+                    <!-- Informações de companheiros serão geradas por JavaScript -->
+                </div>
+                
+                <div class="team-section">
+                    <h4 class="team-title">
+                        <i class="fas fa-people-arrows"></i>
+                        Passagem de Plantão
+                    </h4>
+                    <div class="handover-info" id="handover-info">
+                        <!-- Informações de passagem de plantão serão geradas por JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="last-updated" id="partners-updated">
+                    <!-- Atualizado dinamicamente -->
+                </div>
+            </div>
+        </div>
+        
         <!-- Aba Informações -->
         <div id="info-tab" class="tab-content">
             <div class="card">
                 <h3 class="card-title">
                     <i class="fas fa-id-card"></i>
-                    Informações da Funcionária
+                    Informações do Funcionário
                 </h3>
                 
-                <div class="employee-info">
-                    <div class="info-item">
-                        <div class="info-label">Nome:</div>
-                        <div class="info-value">Alexandra Melissa Moura de Farias</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Matrícula:</div>
-                        <div class="info-value">85285</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Função:</div>
-                        <div class="info-value">Fisioterapeuta</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Horário:</div>
-                        <div class="info-value">07:00 às 19:00</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Setor:</div>
-                        <div class="info-value">CTI / UCO</div>
-                    </div>
+                <div class="employee-info" id="employee-details">
+                    <!-- Informações serão preenchidas por JavaScript -->
                 </div>
             </div>
             
@@ -908,79 +211,19 @@
                     Estatísticas do Mês
                 </h3>
                 
-                <div class="codes-grid">
-                    <div class="code-item">
-                        <div class="code-badge" style="background-color: #00acc1;">PCti</div>
-                        <div class="code-desc">7 dias</div>
-                    </div>
-                    <div class="code-item">
-                        <div class="code-badge" style="background-color: #3a57e8;">MCti</div>
-                        <div class="code-desc">4 dias</div>
-                    </div>
-                    <div class="code-item">
-                        <div class="code-badge" style="background-color: #ff9800;">PUco</div>
-                        <div class="code-desc">1 dia</div>
-                    </div>
-                    <div class="code-item">
-                        <div class="code-badge" style="background-color: #4caf50;">P</div>
-                        <div class="code-desc">1 dia</div>
-                    </div>
+                <div id="statistics-container">
+                    <!-- Estatísticas serão preenchidas por JavaScript -->
                 </div>
             </div>
-        </div>
-        
-        <!-- Aba Legenda -->
-        <div id="legend-tab" class="tab-content">
+            
             <div class="card">
                 <h3 class="card-title">
                     <i class="fas fa-key"></i>
-                    Legenda Completa
+                    Legenda de Códigos
                 </h3>
                 
-                <p class="mb-15">Significado dos códigos utilizados na escala:</p>
-                
-                <div class="codes-grid">
-                    <div class="code-item">
-                        <div class="code-badge">F</div>
-                        <div class="code-desc">Folga</div>
-                    </div>
-                    <div class="code-item">
-                        <div class="code-badge">P</div>
-                        <div class="code-desc">Plantão Geral</div>
-                    </div>
-                    <div class="code-item">
-                        <div class="code-badge">PCti</div>
-                        <div class="code-desc">Plantão CTI</div>
-                    </div>
-                    <div class="code-item">
-                        <div class="code-badge">MCti</div>
-                        <div class="code-desc">Manhã CTI</div>
-                    </div>
-                    <div class="code-item">
-                        <div class="code-badge">PUco</div>
-                        <div class="code-desc">Plantão UCO</div>
-                    </div>
-                    <div class="code-item">
-                        <div class="code-badge">M</div>
-                        <div class="code-desc">Manhã</div>
-                    </div>
-                    <div class="code-item">
-                        <div class="code-badge">T</div>
-                        <div class="code-desc">Tarde</div>
-                    </div>
-                    <div class="code-item">
-                        <div class="code-badge">N</div>
-                        <div class="code-desc">Noite</div>
-                    </div>
-                    <div class="code-item">
-                        <div class="code-badge">***</div>
-                        <div class="code-desc">Férias</div>
-                    </div>
-                </div>
-                
-                <div class="mt-20">
-                    <p><strong>CTI:</strong> Centro de Terapia Intensiva</p>
-                    <p><strong>UCO:</strong> Unidade de Cuidados Orientados</p>
+                <div class="codes-grid" id="legend-codes">
+                    <!-- Legenda será preenchida por JavaScript -->
                 </div>
             </div>
         </div>
@@ -996,589 +239,16 @@
             <i class="fas fa-list-check"></i>
             <span>Trabalho</span>
         </a>
+        <a href="#" class="nav-item" data-tab="partners">
+            <i class="fas fa-user-group"></i>
+            <span>Equipe</span>
+        </a>
         <a href="#" class="nav-item" data-tab="info">
             <i class="fas fa-user"></i>
-            <span>Informações</span>
-        </a>
-        <a href="#" class="nav-item" data-tab="legend">
-            <i class="fas fa-key"></i>
-            <span>Legenda</span>
+            <span>Info</span>
         </a>
     </div>
 
-    <script>
-        // Dados da escala
-        const workDays = [
-            { day: 4, code: "PCti", description: "Plantão CTI" },
-            { day: 7, code: "PUco", description: "Plantão UCO" },
-            { day: 9, code: "MCti", description: "Manhã CTI" },
-            { day: 11, code: "PCti", description: "Plantão CTI" },
-            { day: 14, code: "MCti", description: "Manhã CTI" },
-            { day: 16, code: "PCti", description: "Plantão CTI" },
-            { day: 18, code: "PCti", description: "Plantão CTI" },
-            { day: 20, code: "P", description: "Plantão" },
-            { day: 23, code: "PCti", description: "Plantão CTI" },
-            { day: 25, code: "MCti", description: "Manhã CTI" },
-            { day: 28, code: "MCti", description: "Manhã CTI" },
-            { day: 30, code: "PCti", description: "Plantão CTI" }
-        ];
-        
-        // Escala completa de janeiro 2026
-        const fullSchedule = [
-            "F", "F", "F", "PCti", "F", "F", "PUco", "F", "MCti", "F",
-            "PCti", "F", "F", "MCti", "F", "PCti", "F", "PCti", "F", "P",
-            "F", "F", "PCti", "F", "MCti", "F", "F", "MCti", "F", "PCti", "F"
-        ];
-        
-        // Configurações - Janeiro 2026 começa na QUINTA-FEIRA (4)
-        // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb
-        const firstDayOfMonth = 4; // Quinta-feira
-        const daysInMonth = 31;
-        
-        // Elementos DOM
-        const calendarEl = document.getElementById('calendar');
-        const workDaysListEl = document.getElementById('work-days-list');
-        const nextWorkDaysEl = document.getElementById('next-work-days');
-        const currentStatusContainer = document.getElementById('current-status-container');
-        const tabs = document.querySelectorAll('.tab');
-        const navItems = document.querySelectorAll('.nav-item');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const totalWorkDaysEl = document.getElementById('total-work-days');
-        const totalOffDaysEl = document.getElementById('total-off-days');
-        const nextWorkInEl = document.getElementById('next-work-in');
-        const nextWorkLabelEl = document.getElementById('next-work-label');
-        const calendarUpdatedEl = document.getElementById('calendar-updated');
-        const nextWorkUpdatedEl = document.getElementById('next-work-updated');
-        const workDaysUpdatedEl = document.getElementById('work-days-updated');
-        
-        // Obter data atual REAL
-        const today = new Date();
-        const currentYear = today.getFullYear();
-        const currentMonth = today.getMonth(); // 0 = janeiro
-        const currentDay = today.getDate();
-        const currentHour = today.getHours();
-        
-        // Timer para atualização em tempo real
-        let updateInterval;
-        
-        // Formatar data para exibição
-        function formatDate(date) {
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            return date.toLocaleDateString('pt-BR', options);
-        }
-        
-        // Formatar hora para exibição
-        function formatTime(date) {
-            return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-        }
-        
-        // Atualizar timestamp
-        function updateTimestamps() {
-            const now = new Date();
-            const timeStr = formatTime(now);
-            
-            if (calendarUpdatedEl) {
-                calendarUpdatedEl.textContent = `Atualizado: ${timeStr}`;
-            }
-            if (nextWorkUpdatedEl) {
-                nextWorkUpdatedEl.textContent = `Atualizado: ${timeStr}`;
-            }
-            if (workDaysUpdatedEl) {
-                workDaysUpdatedEl.textContent = `Atualizado: ${timeStr}`;
-            }
-        }
-        
-        // Verificar se é janeiro de 2026
-        function isJanuary2026() {
-            return currentYear === 2026 && currentMonth === 0;
-        }
-        
-        // Calcular próximo dia de trabalho COM DATA REAL
-        function getNextWorkDays() {
-            if (!isJanuary2026()) {
-                return { nextDays: [], daysUntilNext: null, isTodayWorkDay: false };
-            }
-            
-            const todayDay = currentDay;
-            
-            // Verificar se hoje é dia de trabalho
-            const todayWorkDay = workDays.find(d => d.day === todayDay);
-            const isTodayWorkDay = !!todayWorkDay;
-            
-            // Filtrar dias de trabalho futuros (após hoje)
-            const futureWorkDays = workDays.filter(workDay => workDay.day > todayDay);
-            
-            // Ordenar por dia
-            futureWorkDays.sort((a, b) => a.day - b.day);
-            
-            // Pegar próximos 3 dias de trabalho
-            const nextDays = futureWorkDays.slice(0, 3);
-            
-            // Calcular dias até o próximo trabalho
-            let daysUntilNext = null;
-            if (nextDays.length > 0) {
-                daysUntilNext = nextDays[0].day - todayDay;
-            }
-            
-            return { nextDays, daysUntilNext, isTodayWorkDay, todayWorkDay };
-        }
-        
-        // Criar status atual
-        function createCurrentStatus() {
-            currentStatusContainer.innerHTML = '';
-            
-            if (!isJanuary2026()) {
-                const currentDate = formatDate(today);
-                const statusEl = document.createElement('div');
-                statusEl.className = 'current-status off';
-                statusEl.innerHTML = `
-                    <div class="status-text">Escala para Janeiro 2026</div>
-                    <div class="status-subtext">Data atual: ${currentDate}</div>
-                    <div class="status-subtext">Mostrando escala do mês de referência</div>
-                `;
-                currentStatusContainer.appendChild(statusEl);
-                return;
-            }
-            
-            const { isTodayWorkDay, todayWorkDay } = getNextWorkDays();
-            
-            const statusEl = document.createElement('div');
-            
-            if (isTodayWorkDay) {
-                // Verificar se está no horário de trabalho (7h às 19h)
-                const isWorkingHours = currentHour >= 7 && currentHour < 19;
-                
-                statusEl.className = `current-status ${isWorkingHours ? 'pulse' : ''}`;
-                statusEl.innerHTML = `
-                    <div class="status-text">${isWorkingHours ? '🏥 EM TRABALHO AGORA' : '✅ DIA DE TRABALHO'}</div>
-                    <div class="status-subtext">${todayWorkDay.description} (${todayWorkDay.code})</div>
-                    <div class="status-subtext">Horário: 07:00 às 19:00</div>
-                `;
-            } else {
-                statusEl.className = 'current-status off';
-                statusEl.innerHTML = `
-                    <div class="status-text">😴 DIA DE FOLGA</div>
-                    <div class="status-subtext">Aproveite o descanso!</div>
-                `;
-            }
-            
-            currentStatusContainer.appendChild(statusEl);
-        }
-        
-        // Inicializar calendário PERFEITAMENTE ALINHADO
-        function initCalendar() {
-            calendarEl.innerHTML = '';
-            
-            // Janeiro 2026: 1º dia é Quinta-feira (índice 4)
-            // Adicionar dias vazios para alinhar o primeiro dia (1) na quinta
-            for (let i = 0; i < firstDayOfMonth; i++) {
-                const emptyDay = document.createElement('div');
-                emptyDay.className = 'day empty';
-                calendarEl.appendChild(emptyDay);
-            }
-            
-            // Adicionar dias do mês
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayEl = document.createElement('div');
-                const code = fullSchedule[day - 1];
-                const isWorkDay = workDays.some(d => d.day === day);
-                
-                // Verificar se é hoje (apenas se for janeiro 2026)
-                const isToday = isJanuary2026() && (day === currentDay);
-                
-                dayEl.className = `day ${isWorkDay ? 'work' : 'off'} ${isToday ? 'today' : ''}`;
-                dayEl.dataset.day = day;
-                
-                dayEl.innerHTML = `
-                    <div class="day-number">${day}</div>
-                    <div class="day-code">${code}</div>
-                `;
-                
-                // Adicionar evento de toque
-                dayEl.addEventListener('click', () => {
-                    // Remover seleção de todos os dias
-                    document.querySelectorAll('.day.selected').forEach(d => {
-                        d.classList.remove('selected');
-                    });
-                    
-                    // Selecionar este dia
-                    dayEl.classList.add('selected');
-                    
-                    // Mostrar detalhes
-                    const workDay = workDays.find(d => d.day === day);
-                    if (workDay) {
-                        showWorkDayDetails(workDay);
-                    } else {
-                        showDayDetails(day, code);
-                    }
-                });
-                
-                calendarEl.appendChild(dayEl);
-            }
-            
-            // Atualizar estatísticas
-            updateStatistics();
-        }
-        
-        // Inicializar lista de dias de trabalho
-        function initWorkDaysList() {
-            workDaysListEl.innerHTML = '';
-            
-            // Ordenar dias de trabalho
-            const sortedWorkDays = [...workDays].sort((a, b) => a.day - b.day);
-            
-            if (sortedWorkDays.length === 0) {
-                workDaysListEl.innerHTML = '<div class="no-work-days">Nenhum dia de trabalho neste mês</div>';
-                return;
-            }
-            
-            sortedWorkDays.forEach(workDay => {
-                const date = new Date(2026, 0, workDay.day);
-                const dayOfWeek = date.toLocaleDateString('pt-BR', { weekday: 'long' });
-                const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
-                
-                // Verificar se é hoje
-                const isToday = isJanuary2026() && (workDay.day === currentDay);
-                
-                const workDayItem = document.createElement('div');
-                workDayItem.className = `work-day-item ${isToday ? 'today' : ''}`;
-                workDayItem.dataset.day = workDay.day;
-                
-                if (isToday) {
-                    workDayItem.style.borderLeftColor = '#4caf50';
-                    workDayItem.style.backgroundColor = 'rgba(76, 175, 80, 0.05)';
-                }
-                
-                workDayItem.innerHTML = `
-                    <div class="work-day-date">
-                        <div class="work-day-number" style="${isToday ? 'color: #4caf50;' : ''}">${workDay.day}</div>
-                        <div class="work-day-weekday">${capitalizedDay.substring(0, 3)}</div>
-                    </div>
-                    <div class="work-day-details">
-                        <div class="work-day-code" style="${isToday ? 'background-color: #4caf50;' : ''}">${workDay.code}</div>
-                        <div class="work-day-description">${workDay.description}</div>
-                        <div style="font-size: 0.7rem; color: #666;">${workDay.day} de Janeiro de 2026${isToday ? ' - HOJE' : ''}</div>
-                    </div>
-                `;
-                
-                workDayItem.addEventListener('click', () => {
-                    // Destacar no calendário
-                    document.querySelectorAll('.day.selected').forEach(d => {
-                        d.classList.remove('selected');
-                    });
-                    
-                    const dayEl = document.querySelector(`.day[data-day="${workDay.day}"]`);
-                    if (dayEl) {
-                        dayEl.classList.add('selected');
-                        // Rolagem suave
-                        setTimeout(() => {
-                            dayEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-                        }, 100);
-                    }
-                    
-                    // Mudar para a aba do calendário
-                    switchTab('calendar');
-                });
-                
-                workDaysListEl.appendChild(workDayItem);
-            });
-        }
-        
-        // Inicializar próximos dias de trabalho COM DATA REAL
-        function initNextWorkDays() {
-            nextWorkDaysEl.innerHTML = '';
-            
-            const { nextDays, daysUntilNext, isTodayWorkDay, todayWorkDay } = getNextWorkDays();
-            
-            // Atualizar contador no resumo
-            if (daysUntilNext !== null) {
-                nextWorkInEl.textContent = daysUntilNext;
-                nextWorkLabelEl.textContent = daysUntilNext === 1 ? "Próximo trabalho (amanhã)" : "Próximo trabalho";
-            } else if (isTodayWorkDay) {
-                nextWorkInEl.textContent = "HOJE";
-                nextWorkLabelEl.textContent = "Trabalhando agora";
-            } else {
-                nextWorkInEl.textContent = "-";
-                nextWorkLabelEl.textContent = "Próximo trabalho";
-            }
-            
-            // Se for janeiro de 2026
-            if (isJanuary2026()) {
-                // Se hoje for dia de trabalho, mostrar primeiro
-                if (isTodayWorkDay) {
-                    const dayOfWeek = today.toLocaleDateString('pt-BR', { weekday: 'long' });
-                    const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
-                    
-                    const todayItem = document.createElement('div');
-                    todayItem.className = 'next-day-item';
-                    todayItem.style.borderLeftColor = '#4caf50';
-                    
-                    todayItem.innerHTML = `
-                        <div class="next-day-info">
-                            <div class="next-day-date">
-                                <div class="next-day-number" style="color: #4caf50;">${currentDay}</div>
-                                <div class="next-day-weekday">${capitalizedDay.substring(0, 3)}</div>
-                            </div>
-                            <div class="next-day-details">
-                                <div class="next-day-code" style="background-color: #4caf50;">${todayWorkDay.code}</div>
-                                <div class="next-day-description">${todayWorkDay.description}</div>
-                                <div class="next-day-distance">HOJE - ${formatTime(today)}</div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    nextWorkDaysEl.appendChild(todayItem);
-                }
-                
-                // Adicionar próximos dias
-                if (nextDays.length === 0 && !isTodayWorkDay) {
-                    nextWorkDaysEl.innerHTML = '<div class="no-work-days">Não há mais dias de trabalho este mês</div>';
-                } else {
-                    nextDays.forEach(workDay => {
-                        const date = new Date(2026, 0, workDay.day);
-                        const dayOfWeek = date.toLocaleDateString('pt-BR', { weekday: 'long' });
-                        const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
-                        
-                        // Calcular dias até este trabalho
-                        const daysUntil = workDay.day - currentDay;
-                        let distanceText = "";
-                        
-                        if (daysUntil === 1) {
-                            distanceText = "Amanhã";
-                        } else if (daysUntil === 0) {
-                            distanceText = "Hoje";
-                        } else {
-                            distanceText = `Em ${daysUntil} dias`;
-                        }
-                        
-                        const dayItem = document.createElement('div');
-                        dayItem.className = 'next-day-item';
-                        
-                        dayItem.innerHTML = `
-                            <div class="next-day-info">
-                                <div class="next-day-date">
-                                    <div class="next-day-number">${workDay.day}</div>
-                                    <div class="next-day-weekday">${capitalizedDay.substring(0, 3)}</div>
-                                </div>
-                                <div class="next-day-details">
-                                    <div class="next-day-code">${workDay.code}</div>
-                                    <div class="next-day-description">${workDay.description}</div>
-                                    <div class="next-day-distance">${distanceText} - ${workDay.day} de Jan</div>
-                                </div>
-                            </div>
-                        `;
-                        
-                        nextWorkDaysEl.appendChild(dayItem);
-                    });
-                }
-            } else {
-                // Se não for janeiro de 2026
-                const currentDate = formatDate(today);
-                nextWorkDaysEl.innerHTML = `
-                    <div class="no-work-days">
-                        Esta escala é para Janeiro 2026<br>
-                        Data atual: ${currentDate}<br>
-                        Próximos dias de trabalho serão calculados quando for Janeiro 2026
-                    </div>
-                `;
-            }
-        }
-        
-        // Atualizar estatísticas
-        function updateStatistics() {
-            const workDaysCount = workDays.length;
-            const offDaysCount = daysInMonth - workDaysCount;
-            
-            totalWorkDaysEl.textContent = workDaysCount;
-            totalOffDaysEl.textContent = offDaysCount;
-        }
-        
-        // Mostrar detalhes de um dia
-        function showWorkDayDetails(workDay) {
-            const dayOfWeek = new Date(2026, 0, workDay.day).toLocaleDateString('pt-BR', { weekday: 'long' });
-            const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
-            
-            alert(`📅 ${capitalizedDay}, ${workDay.day} de Janeiro de 2026\n\n🏥 ${workDay.description} (${workDay.code})\n⏰ Horário: 07:00 às 19:00\n📍 Setor: CTI / UCO`);
-        }
-        
-        function showDayDetails(day, code) {
-            const dayOfWeek = new Date(2026, 0, day).toLocaleDateString('pt-BR', { weekday: 'long' });
-            const capitalizedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
-            const description = code === "F" ? "Folga" : "Desconhecido";
-            
-            alert(`📅 ${capitalizedDay}, ${day} de Janeiro de 2026\n\n${description} (${code})`);
-        }
-        
-        // Alternar entre abas
-        function switchTab(tabName) {
-            // Atualizar abas superiores
-            tabs.forEach(tab => {
-                if (tab.dataset.tab === tabName) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-            
-            // Atualizar navegação inferior
-            navItems.forEach(item => {
-                if (item.dataset.tab === tabName) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-            
-            // Mostrar conteúdo da aba
-            tabContents.forEach(content => {
-                if (content.id === `${tabName}-tab`) {
-                    content.classList.add('active', 'fade-in');
-                    content.style.display = 'block';
-                } else {
-                    content.classList.remove('active', 'fade-in');
-                    content.style.display = 'none';
-                }
-            });
-            
-            // Remover classe de animação após a animação
-            setTimeout(() => {
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('fade-in');
-                });
-            }, 400);
-        }
-        
-        // Atualizar todos os dados em tempo real
-        function updateAllData() {
-            // Atualizar data/hora atual
-            const now = new Date();
-            const currentHour = now.getHours();
-            
-            // Atualizar timestamps
-            updateTimestamps();
-            
-            // Atualizar status atual (se for janeiro 2026)
-            if (isJanuary2026()) {
-                createCurrentStatus();
-            }
-            
-            // Atualizar próximos dias de trabalho
-            initNextWorkDays();
-        }
-        
-        // Configurar eventos
-        function setupEventListeners() {
-            // Configurar eventos das abas
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabName = tab.dataset.tab;
-                    switchTab(tabName);
-                });
-            });
-            
-            // Configurar eventos da navegação inferior
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const tabName = item.dataset.tab;
-                    switchTab(tabName);
-                });
-            });
-            
-            // Configurar botão de impressão/salvar
-            document.getElementById('print-btn').addEventListener('click', () => {
-                alert("Funcionalidade de salvar/impressão ativada. Em um ambiente real, isso abriria as opções de salvamento ou impressão.");
-            });
-            
-            // Configurar navegação de meses
-            document.getElementById('prev-month').addEventListener('click', () => {
-                alert("Janeiro é o primeiro mês da escala. Não há mês anterior disponível.");
-            });
-            
-            document.getElementById('next-month').addEventListener('click', () => {
-                alert("Esta escala mostra apenas janeiro de 2026. Para meses futuros, consulte a escala atualizada.");
-            });
-        }
-        
-        // Suporte para gestos de deslizar (swipe) entre abas
-        function setupSwipeGestures() {
-            let touchStartX = 0;
-            let touchEndX = 0;
-            
-            document.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-            });
-            
-            document.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            });
-            
-            function handleSwipe() {
-                const swipeThreshold = 50;
-                const diff = touchStartX - touchEndX;
-                
-                // Determinar a aba atual
-                const currentTab = document.querySelector('.tab.active').dataset.tab;
-                const tabOrder = ['calendar', 'work-days', 'info', 'legend'];
-                const currentIndex = tabOrder.indexOf(currentTab);
-                
-                // Deslizar para a esquerda (próxima aba)
-                if (diff > swipeThreshold && currentIndex < tabOrder.length - 1) {
-                    switchTab(tabOrder[currentIndex + 1]);
-                }
-                
-                // Deslizar para a direita (aba anterior)
-                if (diff < -swipeThreshold && currentIndex > 0) {
-                    switchTab(tabOrder[currentIndex - 1]);
-                }
-            }
-        }
-        
-        // Inicializar a aplicação
-        function initApp() {
-            // Inicializar componentes
-            createCurrentStatus();
-            initCalendar();
-            initWorkDaysList();
-            initNextWorkDays();
-            updateTimestamps();
-            
-            // Configurar eventos
-            setupEventListeners();
-            setupSwipeGestures();
-            
-            // Configurar a primeira aba como ativa
-            switchTab('calendar');
-            
-            // Iniciar atualização em tempo real (a cada minuto)
-            updateInterval = setInterval(updateAllData, 60000); // 60 segundos
-            
-            // Mostrar mensagem se não for janeiro de 2026
-            if (!isJanuary2026()) {
-                const currentDate = formatDate(today);
-                setTimeout(() => {
-                    console.log(`Nota: Esta escala é para Janeiro de 2026. Data atual: ${currentDate}`);
-                }, 1000);
-            }
-        }
-        
-        // Iniciar quando o DOM estiver carregado
-        document.addEventListener('DOMContentLoaded', initApp);
-        
-        // Limpar intervalo ao sair da página
-        window.addEventListener('beforeunload', () => {
-            if (updateInterval) {
-                clearInterval(updateInterval);
-            }
-        });
-        
-        // Atualizar ao voltar para a página (quando visível)
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                updateAllData();
-            }
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
